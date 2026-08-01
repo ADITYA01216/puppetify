@@ -1,14 +1,15 @@
-/* Puppet.ai — Replicated Design System */
+/* Puppetify — Design System with Fraunces Typography */
 
-@import url("https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap");
 
 :root {
   --ink: #2b1f15;
   --muted: #5a4630;
   --paper: #faf5ec;
   --orange: #8c5e35;
-  --font-sans: "Manrope", "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-heading: "Manrope", "Plus Jakarta Sans", sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Manrope", system-ui, sans-serif;
+  --font-heading: "Fraunces", serif;
+  --font-serif: "Fraunces", serif;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
