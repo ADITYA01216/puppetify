@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
+import { X, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, KeyRound, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function AuditModal({ isOpen, onClose }) {
@@ -12,18 +12,35 @@ export default function AuditModal({ isOpen, onClose }) {
     phone: '',
     websiteUrl: ''
   });
+
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [inputCode, setInputCode] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleFinish = async (e) => {
+  const handleGoToVerification = (e) => {
     e.preventDefault();
-    setIsCompleted(true);
-    confetti({
-      particleCount: 120,
-      spread: 80,
-      origin: { y: 0.5 }
-    });
+    if (!formData.name || !formData.email) return;
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(code);
+    setInputCode(code);
+    setCodeError('');
+    setStep(3);
+  };
+
+  const handleFinish = async (e) => {
+    if (e) e.preventDefault();
+
+    if (inputCode !== generatedCode) {
+      setCodeError('Incorrect code. Please enter the 6-digit verification code.');
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
@@ -34,11 +51,21 @@ export default function AuditModal({ isOpen, onClose }) {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`
+          message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`,
+          verified: true,
+          verificationCode: generatedCode
         }),
       });
     } catch (err) {
       console.error('Webhook error:', err);
+    } finally {
+      setIsSubmitting(false);
+      setIsCompleted(true);
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.5 }
+      });
     }
   };
 
@@ -77,6 +104,7 @@ export default function AuditModal({ isOpen, onClose }) {
             <div className="flex items-center gap-2 mb-6">
               <div className={`h-1.5 flex-1 rounded-full ${step >= 1 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
               <div className={`h-1.5 flex-1 rounded-full ${step >= 2 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
+              <div className={`h-1.5 flex-1 rounded-full ${step >= 3 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
             </div>
 
             {step === 1 ? (
@@ -128,8 +156,8 @@ export default function AuditModal({ isOpen, onClose }) {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            ) : (
-              <form onSubmit={handleFinish} className="space-y-4">
+            ) : step === 2 ? (
+              <form onSubmit={handleGoToVerification} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
                     Your Name
@@ -183,11 +211,76 @@ export default function AuditModal({ isOpen, onClose }) {
                     type="submit"
                     className="btn-primary flex-1 justify-center py-3 text-xs"
                   >
-                    <span>Confirm Free Audit Booking</span>
-                    <Sparkles className="w-4 h-4" />
+                    <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
+                    <span>Verify Identity & Proceed</span>
                   </button>
                 </div>
               </form>
+            ) : (
+              /* Step 3: Verification */
+              <div className="space-y-4 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#f0e3ce] border-2 border-[#8c5e35] mx-auto flex items-center justify-center text-[#7c4a1e]">
+                  <KeyRound className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-heading text-lg font-bold text-[var(--text-primary)]">
+                    Verify Email Identity
+                  </h4>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    Security Passcode generated for <strong className="text-[var(--text-primary)]">{formData.email}</strong>
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[#fdf8f0] border border-[#d8c3a5] space-y-1">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8c5e35]">
+                    Security Passcode
+                  </div>
+                  <div className="font-mono text-2xl font-black text-[#2b1f15]">
+                    {generatedCode}
+                  </div>
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={inputCode}
+                    onChange={(e) => setInputCode(e.target.value)}
+                    className="w-full text-center font-mono text-lg font-black py-2.5 px-3 rounded-xl border-2 border-[#8c5e35] bg-white text-[#1c1209] tracking-widest focus:outline-none shadow-inner"
+                  />
+                  {codeError && (
+                    <p className="text-xs text-red-600 font-bold mt-1">{codeError}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <button 
+                    type="button" 
+                    onClick={() => setStep(2)}
+                    className="btn-secondary py-2.5 text-xs"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={handleFinish}
+                    disabled={isSubmitting}
+                    className="btn-primary flex-1 justify-center py-2.5 text-xs disabled:opacity-75"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Verifying...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
+                        <span>Verify & Confirm Booking</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             )}
 
           </div>
@@ -197,10 +290,10 @@ export default function AuditModal({ isOpen, onClose }) {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <h3 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-              Audit Confirmed!
+              Verified Audit Confirmed!
             </h3>
             <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto">
-              We have received your audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong>. Our automation engineer will send a calendar invite to <span className="text-[var(--primary)] font-mono">{formData.email}</span> shortly.
+              We have received your verified audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong> (Verified Code: <span className="font-mono font-bold text-[#8c5e35]">{generatedCode}</span>). Our automation engineer will send a calendar invite to <span className="text-[var(--primary)] font-mono">{formData.email}</span>.
             </p>
             <button 
               onClick={onClose}

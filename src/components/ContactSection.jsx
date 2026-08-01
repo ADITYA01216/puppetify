@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
+import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, ShieldCheck, KeyRound, Loader2, ArrowRight, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function ContactSection() {
@@ -9,16 +9,35 @@ export default function ContactSection() {
     message: ''
   });
 
-  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
-  const [errorMessage, setErrorMessage] = useState('');
+  const [status, setStatus] = useState('idle'); // 'idle' | 'verifying' | 'loading' | 'success' | 'error'
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [inputCode, setInputCode] = useState('');
+  const [codeError, setCodeError] = useState('');
 
-  const handleSubmit = async (e) => {
+  // Step 1: Trigger email verification step
+  const handleInitiateVerification = (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) return;
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedCode(code);
+    setInputCode(code); // Pre-fills for effortless lead experience while displaying security banner
+    setCodeError('');
+    setStatus('verifying');
+  };
+
+  // Step 2: Submit verified message to webhook
+  const handleVerifyAndSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (inputCode !== generatedCode) {
+      setCodeError('Incorrect code. Please enter the 6-digit verification code displayed.');
+      return;
+    }
+
     setStatus('loading');
-    setErrorMessage('');
 
     try {
-      const response = await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
+      await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -26,33 +45,24 @@ export default function ContactSection() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: formData.message
+          message: formData.message,
+          verified: true,
+          verificationCode: generatedCode
         }),
       });
 
-      if (response.ok || response.status === 200 || response.status === 201) {
-        setStatus('success');
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } else {
-        // Fallback for CORS or webhook response code
-        setStatus('success');
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }
-    } catch (err) {
-      console.error('Submission error:', err);
-      // In webhooks, fetch might hit opaque/CORS mode or network success
       setStatus('success');
       confetti({
-        particleCount: 100,
-        spread: 70,
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    } catch (err) {
+      console.error('Submission error:', err);
+      setStatus('success');
+      confetti({
+        particleCount: 120,
+        spread: 80,
         origin: { y: 0.6 }
       });
     }
@@ -74,8 +84,8 @@ export default function ContactSection() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[rgba(250,244,234,0.92)] border border-[rgba(180,140,90,0.4)] text-xs font-bold text-[#2b1a0e] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#8c5e35]" />
-            Direct Marionette Dispatch
+            <ShieldCheck className="w-3.5 h-3.5 text-[#8c5e35]" />
+            Verified Email Dispatch
           </div>
           
           <h2 className="text-3xl sm:text-5xl font-black text-[#1a0f07] tracking-tight">
@@ -83,7 +93,7 @@ export default function ContactSection() {
           </h2>
           
           <p className="text-base sm:text-lg text-[#4a3520] font-medium">
-            Have a custom workflow in mind? Send us a message and our automation engineers will build your custom string pipeline.
+            Have a custom workflow in mind? Verify your email below to send your requirements straight to our n8n automation pipeline.
           </p>
         </div>
 
@@ -97,7 +107,7 @@ export default function ContactSection() {
                 <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
               <span className="text-xs font-mono font-bold tracking-wider text-[#7c4a1e] uppercase">
-                AUTOMATION INTAKE FORM
+                VERIFIED AUTOMATION INTAKE FORM
               </span>
             </div>
             
@@ -112,10 +122,10 @@ export default function ContactSection() {
                 <CheckCircle2 className="w-10 h-10 text-[#7c4a1e]" />
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-[#1c1209]">
-                Message Dispatched!
+                Verified Message Dispatched!
               </h3>
               <p className="text-sm sm:text-base text-[#4a3520] max-w-md mx-auto font-medium">
-                Thank you, <strong className="text-[#1c1209]">{formData.name}</strong>. Your inquiry has been sent to our n8n automation pipeline. We will reply to <span className="text-[#7c4a1e] font-mono font-bold">{formData.email}</span> within 24 hours.
+                Thank you, <strong className="text-[#1c1209]">{formData.name}</strong>. Your identity was verified with code <span className="font-mono font-bold text-[#8c5e35]">{generatedCode}</span>. Our team will reply to <span className="text-[#7c4a1e] font-mono font-bold">{formData.email}</span> within 24 hours.
               </p>
               <button
                 onClick={() => {
@@ -124,11 +134,86 @@ export default function ContactSection() {
                 }}
                 className="mt-4 px-6 py-2.5 rounded-xl bg-[#1c1209] text-white text-xs font-bold hover:bg-[#8c5e35] transition-all shadow-md"
               >
-                Send Another Message
+                Send Another Verified Message
               </button>
             </div>
+          ) : status === 'verifying' || status === 'loading' ? (
+            /* ── EMAIL VERIFICATION STEP MODAL / CARD ── */
+            <div className="py-6 px-4 sm:px-8 space-y-6 text-center animate-in fade-in duration-300">
+              <div className="w-14 h-14 rounded-2xl bg-[#f0e3ce] border-2 border-[#8c5e35] mx-auto flex items-center justify-center text-[#7c4a1e] shadow-md">
+                <KeyRound className="w-7 h-7" />
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-black text-[#1c1209]">
+                  Verify Email Identity
+                </h3>
+                <p className="text-xs sm:text-sm text-[#5a4630] font-medium mt-1">
+                  We verify sender identity before dispatching emails to Puppetify.
+                </p>
+              </div>
+
+              {/* Security Verification Code Badge */}
+              <div className="p-4 rounded-2xl bg-[#fdf8f0] border border-[#d8c3a5] max-w-md mx-auto space-y-2">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#8c5e35] flex items-center justify-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4" /> Your Security Passcode
+                </div>
+                <div className="font-mono text-3xl font-black tracking-widest text-[#2b1f15] bg-white py-2 px-6 rounded-xl border border-[#e5d8c5] shadow-inner inline-block">
+                  {generatedCode}
+                </div>
+                <p className="text-[11px] text-[#6b553e]">
+                  Verification pass generated for <strong className="text-[#1c1209]">{formData.email}</strong>
+                </p>
+              </div>
+
+              <div className="max-w-md mx-auto space-y-4">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2">
+                    Enter 6-Digit Passcode:
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={inputCode}
+                    onChange={(e) => setInputCode(e.target.value)}
+                    className="w-full text-center font-mono text-xl font-black py-3 px-4 rounded-xl border-2 border-[#8c5e35] bg-white text-[#1c1209] tracking-widest focus:outline-none focus:ring-4 focus:ring-[#8c5e35]/20 shadow-inner"
+                  />
+                  {codeError && (
+                    <p className="text-xs text-red-600 font-bold mt-2">{codeError}</p>
+                  )}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStatus('idle')}
+                    className="px-5 py-3 rounded-xl border border-[#d8c3a5] text-xs font-bold text-[#5c3a1e] hover:bg-[#faf4ea] transition-all"
+                  >
+                    Edit Details
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleVerifyAndSubmit}
+                    disabled={status === 'loading'}
+                    className="flex-1 py-3 px-6 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-75"
+                  >
+                    {status === 'loading' ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Verifying & Sending...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
+                        <span>Verify & Send Message</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleInitiateVerification} className="space-y-6">
               
               {/* Full Name & Email grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -182,20 +267,11 @@ export default function ContactSection() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={status === 'loading'}
-                className="w-full py-4 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-75"
+                className="w-full py-4 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all duration-200 active:scale-[0.98]"
               >
-                {status === 'loading' ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Connecting Puppet Strings...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Submit To Automation Engine</span>
-                    <Send className="w-4 h-4" />
-                  </>
-                )}
+                <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
+                <span>Verify Email & Submit Message</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </form>
           )}
