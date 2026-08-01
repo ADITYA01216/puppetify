@@ -45,6 +45,8 @@ export default function ChatbotWidget() {
     setIsLoading(true);
 
     try {
+      console.log('Posting message to n8n webhook https://puppet.app.n8n.cloud/webhook/chatbot:', userText);
+      
       const response = await fetch('https://puppet.app.n8n.cloud/webhook/chatbot', {
         method: 'POST',
         headers: {
@@ -53,12 +55,31 @@ export default function ChatbotWidget() {
         body: JSON.stringify({ message: userText }),
       });
 
+      console.log('n8n Response status:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      const replyText = data?.reply || data?.message || data?.text || "Thank you for reaching out! Our automation engine has received your message.";
+      console.log('n8n Webhook JSON received:', data);
+
+      // Parse reply from n8n output structure ({ "reply": "..." } or [{ "reply": "..." }] or [{ "json": { "reply": "..." } }])
+      let replyText = null;
+
+      if (typeof data === 'string') {
+        replyText = data;
+      } else if (Array.isArray(data) && data.length > 0) {
+        const first = data[0];
+        replyText = first?.reply || first?.json?.reply || first?.output || first?.message;
+      } else if (data && typeof data === 'object') {
+        replyText = data?.reply || data?.json?.reply || data?.output || data?.message;
+      }
+
+      if (!replyText) {
+        console.error('Webhook payload is missing the expected "reply" field. Data structure:', data);
+        throw new Error('Missing "reply" field in webhook response');
+      }
 
       setMessages((prev) => [
         ...prev,
@@ -69,7 +90,7 @@ export default function ChatbotWidget() {
         }
       ]);
     } catch (err) {
-      console.error('Chatbot error:', err);
+      console.error('Chatbot webhook request failed:', err);
       setMessages((prev) => [
         ...prev,
         {
