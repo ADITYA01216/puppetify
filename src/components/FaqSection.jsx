@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
 
 export default function FaqSection({ onOpenDemo }) {
-  const [openIdx, setOpenIdx] = useState(0);
+  const [openIdx, setOpenIdx] = useState(null);
 
   const faqs = [
     {
