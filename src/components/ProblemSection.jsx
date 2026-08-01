@@ -3,7 +3,7 @@ import { AlertCircle, Clock, CheckCircle2, XCircle, ArrowRight, Zap, RefreshCw }
 
 export default function ProblemSection({ onOpenDemo }) {
   return (
-    <section id="problem" className="section-padding bg-white relative border-y border-[var(--border-color)]">
+    <section id="problem" className="section-padding relative border-y border-[var(--border-color)]" style={{ backgroundColor: '#FAF6EE' }}>
       <div className="container mx-auto">
         
         {/* Header */}
@@ -20,7 +20,7 @@ export default function ProblemSection({ onOpenDemo }) {
           </p>
         </div>
 
-        {/* Side-by-Side Comparison: Manual vs Puppetify Autopilot */}
+        {/* Side-by-Side Comparison: Manual vs Puppetify Autopilot Way */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto relative">
           
           {/* Connecting Vertical String Line between sections on desktop */}
@@ -31,7 +31,7 @@ export default function ProblemSection({ onOpenDemo }) {
           </div>
 
           {/* Card 1: The Manual Way */}
-          <div className="puppet-card bg-[var(--bg-main)] border-red-200 p-8 space-y-6 relative overflow-hidden">
+          <div className="puppet-card bg-white border-red-200 p-8 space-y-6 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-red-100 border border-red-200 text-red-600 flex items-center justify-center font-bold">
