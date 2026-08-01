@@ -1,65 +1,67 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  sendEmailVerification, 
+  signOut as firebaseSignOut,
+  onAuthStateChanged 
+} from 'firebase/auth';
+import { auth } from '../firebase';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('signup'); // 'signin' | 'signup'
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Load persisted user session on startup
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem('puppetify_user');
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-    } catch (e) {
-      console.error('Failed to load user session:', e);
-    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
-  const login = (userData) => {
-    const userSession = {
-      name: userData.name || userData.email.split('@')[0],
-      email: userData.email,
-      token: 'token_' + Math.random().toString(36).substring(2),
-      createdAt: new Date().toISOString(),
-      verified: true
-    };
-    setUser(userSession);
-    localStorage.setItem('puppetify_user', JSON.stringify(userSession));
-    setIsAuthModalOpen(false);
+  const signUp = async (email, password) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    if (userCredential.user) {
+      await sendEmailVerification(userCredential.user);
+    }
+    return userCredential.user;
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('puppetify_user');
+  const signIn = async (email, password) => {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    if (userCredential.user && !userCredential.user.emailVerified) {
+      const error = new Error('NOT_VERIFIED');
+      error.code = 'NOT_VERIFIED';
+      throw error;
+    }
+    return userCredential.user;
   };
 
-  const openAuthModal = (mode = 'signup') => {
-    setAuthMode(mode);
-    setIsAuthModalOpen(true);
+  const signOut = () => {
+    return firebaseSignOut(auth);
   };
 
-  const closeAuthModal = () => {
-    setIsAuthModalOpen(false);
+  const resendVerification = async () => {
+    if (auth.currentUser) {
+      await sendEmailVerification(auth.currentUser);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        user,
-        login,
-        logout,
-        isAuthModalOpen,
-        authMode,
-        setAuthMode,
-        openAuthModal,
-        closeAuthModal
+        currentUser,
+        signUp,
+        signIn,
+        signOut,
+        resendVerification,
+        loading
       }}
     >
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
