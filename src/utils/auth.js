@@ -1,7 +1,14 @@
 // Auth Utility & Webhook Client for Puppetify
 
-export const N8N_REQUEST_OTP_URL = import.meta.env.VITE_N8N_WEBHOOK_REQUEST_OTP || 'https://puppet.app.n8n.cloud/webhook/request-otp';
-export const N8N_VERIFY_OTP_URL = import.meta.env.VITE_N8N_WEBHOOK_VERIFY_OTP || 'https://puppet.app.n8n.cloud/webhook/verify-otp';
+export const N8N_REQUEST_OTP_URL = 
+  import.meta.env.VITE_N8N_WEBHOOK_URL_REQUEST_OTP || 
+  import.meta.env.VITE_N8N_WEBHOOK_REQUEST_OTP || 
+  'https://puppet.app.n8n.cloud/webhook/request-otp';
+
+export const N8N_VERIFY_OTP_URL = 
+  import.meta.env.VITE_N8N_WEBHOOK_URL_VERIFY_OTP || 
+  import.meta.env.VITE_N8N_WEBHOOK_VERIFY_OTP || 
+  'https://puppet.app.n8n.cloud/webhook/verify-otp';
 
 // Session Token Management
 export function getSessionToken() {
