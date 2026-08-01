@@ -143,26 +143,35 @@ export async function verifyOTP(email, otp) {
 
     if (!res.ok) {
       if (res.status === 409 || data.status === 'already_submitted' || data.alreadySubmitted) {
-        clearIdempotencyKey('otp_verify_idempotency_key');
-        // Handle token if returned in 409 payload
-        const token = data.token || data.session_token || data.jwt || data.sessionToken;
-        if (token) {
-          setSessionToken(token);
-          setUserEmail(email);
+        if (data.success === true) {
+          clearIdempotencyKey('otp_verify_idempotency_key');
+          const token = data.token || data.session_token || data.jwt || data.sessionToken;
+          if (token) {
+            setSessionToken(token);
+            setUserEmail(email);
+          }
+          return { success: true, alreadySubmitted: true, token };
         }
-        return { success: true, alreadySubmitted: true, token };
       }
 
-      if (res.status === 400 || res.status === 401 || data.error === 'invalid_otp') {
-        throw new Error('Invalid or expired OTP code. Please check your inbox and try again.');
-      }
+      const errorReason = data.reason || data.message || data.error || 'Invalid or expired OTP code. Please check your inbox and try again.';
+      throw new Error(errorReason);
+    }
 
-      throw new Error(data.message || data.error || `OTP verification failed (${res.status})`);
+    // STRICT CHECK: Only treat as successful if response JSON has success === true
+    if (data.success !== true) {
+      const errorReason = data.reason || data.message || data.error || 'Verification failed. Invalid or expired OTP.';
+      throw new Error(errorReason);
     }
 
     // Extract session token
-    const token = data.token || data.session_token || data.jwt || data.sessionToken || `mock_jwt_${Date.now()}_${Math.random().toString(36).substring(2)}`;
-    
+    const token = data.token || data.session_token || data.jwt || data.sessionToken;
+    if (!token) {
+      const errorReason = data.reason || 'Authentication failed: No session token returned.';
+      throw new Error(errorReason);
+    }
+
+    // Store session token & email only on verified success
     setSessionToken(token);
     setUserEmail(email);
     clearIdempotencyKey('otp_verify_idempotency_key');
