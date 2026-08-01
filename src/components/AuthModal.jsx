@@ -5,15 +5,7 @@ import { GoogleIcon } from './GoogleAuthModal';
 import confetti from 'canvas-confetti';
 
 export default function AuthModal() {
-  const { 
-    isAuthModalOpen, 
-    closeAuthModal, 
-    authMode, 
-    setAuthMode, 
-    signupWithEmail, 
-    signinWithEmail, 
-    signinWithGoogle 
-  } = useAuth();
+  const { isAuthModalOpen, closeAuthModal, authMode, setAuthMode, login } = useAuth();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -27,7 +19,7 @@ export default function AuthModal() {
 
   if (!isAuthModalOpen) return null;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
 
@@ -53,38 +45,30 @@ export default function AuthModal() {
 
     setLoading(true);
 
-    try {
-      if (authMode === 'signup') {
-        await signupWithEmail(formData.email, formData.password, formData.name);
-      } else {
-        await signinWithEmail(formData.email, formData.password);
-      }
+    setTimeout(() => {
+      login({
+        name: formData.name || formData.email.split('@')[0],
+        email: formData.email
+      });
+      setLoading(false);
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
-    } catch (err) {
-      setError(err.message || 'Authentication failed.');
-    } finally {
-      setLoading(false);
-    }
+    }, 600);
   };
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      await signinWithGoogle();
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } catch (err) {
-      setError('Google Sign-In failed.');
-    } finally {
-      setLoading(false);
-    }
+  const handleGoogleSignIn = () => {
+    login({
+      name: 'Aditya Agarwal',
+      email: 'aditya.puppetify@gmail.com'
+    });
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
   };
 
   return (
