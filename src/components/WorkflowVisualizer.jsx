@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Play, CheckCircle2, Zap, ArrowRight, RefreshCw, Cpu, Layers, ShieldCheck, Sparkles } from 'lucide-react';
+import { 
+  Play, CheckCircle2, Zap, ArrowRight, RefreshCw, Cpu, Layers, ShieldCheck, Sparkles,
+  Utensils, Inbox, MessageSquare, BarChart3, Dumbbell, Smartphone, ClipboardList,
+  BookOpen, Package, Search, TrendingUp, Laptop, AlertTriangle, Settings, FileText,
+  GraduationCap, Mail, Tag, Bot, Receipt, FileSpreadsheet, Building, AlertCircle
+} from 'lucide-react';
 
 const INDUSTRY_WORKFLOWS = [
   {
     id: 'restaurant',
     name: 'Restaurants & Cafes',
-    icon: '🍽️',
+    icon: Utensils,
     description: 'Automate table bookings, order notifications, customer confirmations, and POS sheet logging seamlessly.',
     steps: [
       {
@@ -13,7 +18,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'New Booking / Order',
         detail: 'New booking or takeaway order received via web form or app',
-        icon: '📩',
+        icon: Inbox,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -21,7 +26,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Check Table Availability',
         detail: 'Checks seating capacity & open slot in table system',
-        icon: '⚡',
+        icon: Zap,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -29,7 +34,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Send WhatsApp Confirm',
         detail: 'Dispatches instant booking confirmation & directions',
-        icon: '💬',
+        icon: MessageSquare,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -37,7 +42,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Log to Sheet / CRM',
         detail: 'Appends guest details and order info to main database',
-        icon: '📊',
+        icon: BarChart3,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -45,7 +50,7 @@ const INDUSTRY_WORKFLOWS = [
   {
     id: 'gym',
     name: 'Gyms & Fitness Studios',
-    icon: '🏋️',
+    icon: Dumbbell,
     description: 'Streamline member signups, trainer slot checking, automated reminders, and attendance logging.',
     steps: [
       {
@@ -53,7 +58,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'New Signup / Booking',
         detail: 'New membership signup or class slot requested by member',
-        icon: '🏋️',
+        icon: Dumbbell,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -61,7 +66,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Check Trainer Capacity',
         detail: 'Verifies instructor availability and room cap',
-        icon: '⚡',
+        icon: Zap,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -69,7 +74,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Send Reminders',
         detail: 'Fires instant confirmation + 24h SMS reminder sequence',
-        icon: '📲',
+        icon: Smartphone,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -77,7 +82,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Update Attendance Log',
         detail: 'Syncs member check-in record to gym management app',
-        icon: '📋',
+        icon: ClipboardList,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -85,7 +90,7 @@ const INDUSTRY_WORKFLOWS = [
   {
     id: 'retail',
     name: 'Bookstores & Retail',
-    icon: '📚',
+    icon: BookOpen,
     description: 'Connect inventory lookups, customer SMS stock alerts, order notifications, and stock log updates.',
     steps: [
       {
@@ -93,7 +98,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'Order / Stock Inquiry',
         detail: 'New product order or inventory lookup request submitted',
-        icon: '📦',
+        icon: Package,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -101,7 +106,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Check Stock & Price',
         detail: 'Queries store database for quantity & active pricing',
-        icon: '🔍',
+        icon: Search,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -109,7 +114,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Send Stock Alert',
         detail: 'Sends availability notification & pickup link via SMS',
-        icon: '💬',
+        icon: MessageSquare,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -117,7 +122,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Update Inventory Log',
         detail: 'Deducts stock quantity & updates master retail sheet',
-        icon: '📈',
+        icon: TrendingUp,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -125,7 +130,7 @@ const INDUSTRY_WORKFLOWS = [
   {
     id: 'software',
     name: 'Software Companies',
-    icon: '💻',
+    icon: Laptop,
     description: 'Automate build alerts, health checks, team Slack notifications, and incident log creation.',
     steps: [
       {
@@ -133,7 +138,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'Deploy / Error Alert',
         detail: 'New code deployment or error exception triggered',
-        icon: '🚨',
+        icon: AlertTriangle,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -141,7 +146,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Check Test Suite & API',
         detail: 'Runs automated test suite & checks endpoint health',
-        icon: '⚙️',
+        icon: Settings,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -149,7 +154,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Post to Slack',
         detail: 'Broadcasts deployment status or bug report to dev channel',
-        icon: '💬',
+        icon: MessageSquare,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -157,7 +162,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Log Incident (if failed)',
         detail: 'Creates ticket in issue tracker if test suite fails',
-        icon: '📝',
+        icon: FileText,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -165,7 +170,7 @@ const INDUSTRY_WORKFLOWS = [
   {
     id: 'teachers',
     name: 'Teachers & Educators',
-    icon: '🎓',
+    icon: GraduationCap,
     description: 'Automatically route student queries, categorize urgency, send replies, and log academic records.',
     steps: [
       {
@@ -173,7 +178,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'Student Email / Query',
         detail: 'Student query or assignment submission received',
-        icon: '✉️',
+        icon: Mail,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -181,7 +186,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Categorize Topic & Urgency',
         detail: 'Evaluates question topic, course module, and priority',
-        icon: '🏷️',
+        icon: Tag,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -189,7 +194,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Auto-Reply / Route',
         detail: 'Sends FAQ answer or routes urgent note to teacher',
-        icon: '🤖',
+        icon: Bot,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -197,7 +202,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Log Student Tracker',
         detail: 'Records interaction history in student progress sheet',
-        icon: '📚',
+        icon: BookOpen,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -205,7 +210,7 @@ const INDUSTRY_WORKFLOWS = [
   {
     id: 'finance',
     name: 'Finance & CA Firms',
-    icon: '📊',
+    icon: BarChart3,
     description: 'Automate invoice intake, line-item extraction, accounting sync, and anomaly review flagging.',
     steps: [
       {
@@ -213,7 +218,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'TRIGGER',
         title: 'Invoice / Receipt Received',
         detail: 'Client submits digital invoice or expense receipt',
-        icon: '🧾',
+        icon: Receipt,
         badgeColor: 'bg-amber-100 text-amber-900 border-amber-300'
       },
       {
@@ -221,7 +226,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'LOGIC',
         title: 'Extract Line Items',
         detail: 'Extracts vendor, tax amount, and subtotal entries',
-        icon: '📑',
+        icon: FileSpreadsheet,
         badgeColor: 'bg-purple-100 text-purple-900 border-purple-300'
       },
       {
@@ -229,7 +234,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Sync Accounting Tool',
         detail: 'Auto-categorizes tax ledger & posts entry to ledger software',
-        icon: '🏦',
+        icon: Building,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -237,7 +242,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Flag Anomaly Review',
         detail: 'Flags high-value or unusual entries for accountant sign-off',
-        icon: '⚠️',
+        icon: AlertCircle,
         badgeColor: 'bg-blue-100 text-blue-900 border-blue-300'
       }
     ]
@@ -311,7 +316,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                     : 'bg-white text-[#4a3625] border-[#dfd4c3] hover:border-[#8c5e35] hover:bg-[#faf4ea]'
                 }`}
               >
-                <span className="text-base">{tab.icon}</span>
+                <tab.icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#8c5e35]'}`} />
                 <span>{tab.name}</span>
               </button>
             );
@@ -330,7 +335,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                 </span>
               </div>
               <h3 className="text-2xl font-black text-[#2b1f15] mt-3 flex items-center gap-2">
-                <span>{currentWorkflow.icon}</span> {currentWorkflow.name}
+                <currentWorkflow.icon className="w-6 h-6 text-[#8c5e35]" /> {currentWorkflow.name}
               </h3>
               <p className="text-xs sm:text-sm text-[#5a4630] font-medium max-w-xl mt-1">
                 {currentWorkflow.description}
@@ -393,7 +398,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                         <span className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${step.badgeColor}`}>
                           {step.type}
                         </span>
-                        <span className="text-xl">{step.icon}</span>
+                        <step.icon className="w-5 h-5 text-[#8c5e35]" />
                       </div>
 
                       <h4 className="text-base font-extrabold text-[#2b1f15] mb-2">

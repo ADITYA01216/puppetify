@@ -1,21 +1,25 @@
 import React from 'react';
+import { 
+  Workflow, MessageSquare, Zap, CreditCard, Calendar, ShoppingBag, Database, 
+  Bot, BarChart3, Mail, Smartphone, Layers, ShieldCheck
+} from 'lucide-react';
 
 const INTEGRATIONS = [
-  { name: 'n8n', category: 'Workflow Engine', icon: '🔴' },
-  { name: 'WhatsApp', category: 'Messaging', icon: '💬' },
-  { name: 'Slack', category: 'Team Alerts', icon: '⚡' },
-  { name: 'Stripe', category: 'Payments', icon: '💳' },
-  { name: 'Google Calendar', category: 'Booking', icon: '📅' },
-  { name: 'Zapier', category: 'Workflows', icon: '🟧' },
-  { name: 'Shopify', category: 'E-Commerce', icon: '🛍️' },
-  { name: 'Notion', category: 'Database', icon: '📓' },
-  { name: 'HubSpot', category: 'CRM', icon: '🟧' },
-  { name: 'OpenAI', category: 'AI Models', icon: '🤖' },
-  { name: 'Airtable', category: 'Base', icon: '📊' },
-  { name: 'Calendly', category: 'Scheduling', icon: '🗓️' },
-  { name: 'Make.com', category: 'Automation', icon: '🟣' },
-  { name: 'Twilio', category: 'SMS', icon: '📲' },
-  { name: 'Gmail', category: 'Email Engine', icon: '✉️' },
+  { name: 'n8n', category: 'Workflow Engine', icon: Workflow },
+  { name: 'WhatsApp', category: 'Messaging', icon: MessageSquare },
+  { name: 'Slack', category: 'Team Alerts', icon: Zap },
+  { name: 'Stripe', category: 'Payments', icon: CreditCard },
+  { name: 'Google Calendar', category: 'Booking', icon: Calendar },
+  { name: 'Zapier', category: 'Workflows', icon: Workflow },
+  { name: 'Shopify', category: 'E-Commerce', icon: ShoppingBag },
+  { name: 'Notion', category: 'Database', icon: Database },
+  { name: 'HubSpot', category: 'CRM', icon: Layers },
+  { name: 'OpenAI', category: 'AI Models', icon: Bot },
+  { name: 'Airtable', category: 'Base', icon: BarChart3 },
+  { name: 'Calendly', category: 'Scheduling', icon: Calendar },
+  { name: 'Make.com', category: 'Automation', icon: Workflow },
+  { name: 'Twilio', category: 'SMS', icon: Smartphone },
+  { name: 'Gmail', category: 'Email Engine', icon: Mail },
 ];
 
 export default function IntegrationsBar() {
@@ -24,8 +28,9 @@ export default function IntegrationsBar() {
       
       {/* Label header */}
       <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
-        <span className="text-xs font-extrabold uppercase tracking-widest text-[#8c6b43] bg-[#f0e3ce] px-3.5 py-1 rounded-full border border-[#d8c3a5]">
-          ⚡ Seamless String Integrations — 100+ Apps Supported
+        <span className="text-xs font-extrabold uppercase tracking-widest text-[#8c6b43] bg-[#f0e3ce] px-3.5 py-1 rounded-full border border-[#d8c3a5] inline-flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#8c5e35]" />
+          Seamless String Integrations — 100+ Apps Supported
         </span>
       </div>
 
@@ -37,7 +42,7 @@ export default function IntegrationsBar() {
               key={idx}
               className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/90 border border-[#e5d8c5] shadow-sm hover:border-[#8c5e35] transition-all hover:scale-105 cursor-pointer"
             >
-              <span className="text-lg">{item.icon}</span>
+              <item.icon className="w-4 h-4 text-[#8c5e35]" />
               <div className="flex flex-col">
                 <span className="text-xs font-extrabold text-[#2b1f15] tracking-tight">{item.name}</span>
                 <span className="text-[10px] font-semibold text-[#8c6b43]">{item.category}</span>
