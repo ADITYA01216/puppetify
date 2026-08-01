@@ -72,7 +72,7 @@ export default function App() {
         <WoodenSectionDivider />
 
         {/* n8n Webhook Contact Form Section */}
-        <ContactSection />
+        <ContactSection onOpenAuth={() => setIsAuthModalOpen(true)} />
       </main>
 
       {/* Footer */}

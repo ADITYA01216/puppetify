@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2, Lock, LogIn, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { getIdempotencyKey, clearIdempotencyKey, apiFetch } from '../utils/auth';
+import { getIdempotencyKey, clearIdempotencyKey, apiFetch, isAuthenticated, getUserEmail } from '../utils/auth';
 
-export default function ContactSection() {
+export default function ContactSection({ onOpenAuth }) {
+  const [isAuthed, setIsAuthed] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -13,12 +14,42 @@ export default function ContactSection() {
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
 
+  const syncAuth = () => {
+    const authed = isAuthenticated();
+    setIsAuthed(authed);
+    if (authed) {
+      const userEmail = getUserEmail();
+      setFormData(prev => ({ ...prev, email: userEmail }));
+    }
+  };
+
+  useEffect(() => {
+    syncAuth();
+    window.addEventListener('storage', syncAuth);
+    const handleUnauth = () => {
+      setIsAuthed(false);
+      setErrorMessage('Your session expired, please sign in again');
+    };
+    window.addEventListener('auth:unauthorized', handleUnauth);
+    return () => {
+      window.removeEventListener('storage', syncAuth);
+      window.removeEventListener('auth:unauthorized', handleUnauth);
+    };
+  }, []);
+
   const handleFormTouch = () => {
     getIdempotencyKey('contact_form_idempotency_key');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated()) {
+      setIsAuthed(false);
+      setErrorMessage('Your session expired, please sign in again');
+      if (onOpenAuth) onOpenAuth();
+      return;
+    }
+
     setStatus('loading');
     setErrorMessage('');
 
@@ -49,6 +80,12 @@ export default function ContactSection() {
       }
     } catch (err) {
       console.error('Submission error:', err);
+      if (err.message && (err.message.includes('expired') || err.message.includes('Unauthorized') || err.message.includes('sign in'))) {
+        setIsAuthed(false);
+        setErrorMessage('Your session expired, please sign in again');
+        setStatus('idle');
+        return;
+      }
       if (err.message && err.message.includes('already')) {
         clearIdempotencyKey('contact_form_idempotency_key');
         setStatus('success');
@@ -97,8 +134,13 @@ export default function ContactSection() {
               <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
                 <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
-              <span className="text-xs font-mono font-bold tracking-wider text-[#7c4a1e] uppercase">
+              <span className="text-xs font-mono font-bold tracking-wider text-[#7c4a1e] uppercase flex items-center gap-1.5">
                 AUTOMATION INTAKE FORM
+                {isAuthed && (
+                  <span className="text-[10px] bg-[#f0e3ce] text-[#8c5e35] px-2 py-0.5 rounded-full font-bold border border-[#d8c3a5] lowercase">
+                    authenticated
+                  </span>
+                )}
               </span>
             </div>
             
@@ -107,7 +149,42 @@ export default function ContactSection() {
             </div>
           </div>
 
-          {status === 'success' ? (
+          {!isAuthed ? (
+            /* Unauthenticated Sign-In Prompt */
+            <div className="text-center py-10 space-y-6">
+              <div className="w-16 h-16 rounded-full bg-[#f0e3ce] border-2 border-[#8c5e35] mx-auto flex items-center justify-center shadow-inner text-[#8c5e35]">
+                <Lock className="w-8 h-8" />
+              </div>
+
+              <div className="space-y-2 max-w-md mx-auto">
+                <h3 className="text-2xl font-black text-[#1c1209]">
+                  Sign In Required
+                </h3>
+                <p className="text-sm text-[#5a4630] font-medium leading-relaxed">
+                  Sign in to submit your automation request.
+                </p>
+              </div>
+
+              {errorMessage && (
+                <div className="max-w-md mx-auto p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-center justify-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <div>
+                <button
+                  type="button"
+                  onClick={onOpenAuth}
+                  className="px-8 py-3.5 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm inline-flex items-center gap-2 shadow-xl transition-all active:scale-95 cursor-pointer"
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Sign In</span>
+                </button>
+              </div>
+            </div>
+          ) : status === 'success' ? (
+            /* Success View */
             <div className="text-center py-12 space-y-5 animate-in fade-in duration-300">
               <div className="w-16 h-16 rounded-full bg-[#f0e3ce] text-[#8c5e35] border-2 border-[#8c5e35] mx-auto flex items-center justify-center shadow-inner">
                 <CheckCircle2 className="w-10 h-10 text-[#7c4a1e]" />
@@ -121,14 +198,15 @@ export default function ContactSection() {
               <button
                 onClick={() => {
                   setStatus('idle');
-                  setFormData({ name: '', email: '', message: '' });
+                  setFormData(prev => ({ ...prev, name: '', message: '' }));
                 }}
-                className="mt-4 px-6 py-2.5 rounded-xl bg-[#1c1209] text-white text-xs font-bold hover:bg-[#8c5e35] transition-all shadow-md"
+                className="mt-4 px-6 py-2.5 rounded-xl bg-[#1c1209] text-white text-xs font-bold hover:bg-[#8c5e35] transition-all shadow-md cursor-pointer"
               >
                 Send Another Message
               </button>
             </div>
           ) : (
+            /* Authenticated Form View */
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {errorMessage && (
@@ -138,7 +216,7 @@ export default function ContactSection() {
                 </div>
               )}
 
-              {/* Full Name & Email grid */}
+              {/* Full Name & Read-Only Email grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
@@ -160,21 +238,21 @@ export default function ContactSection() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5 text-[#8c5e35]" />
-                    Email Address *
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-[#8c5e35]" />
+                      Email Address *
+                    </span>
+                    <span className="text-[10px] text-[#8c5e35] font-extrabold flex items-center gap-1 bg-[#f0e3ce] px-2 py-0.5 rounded border border-[#d8c3a5]">
+                      <ShieldCheck className="w-3 h-3" /> Verified Account
+                    </span>
                   </label>
                   <input
                     type="email"
                     required
-                    placeholder="sarah@yourbusiness.com"
+                    readOnly
                     value={formData.email}
-                    onFocus={handleFormTouch}
-                    onChange={(e) => {
-                      setFormData({ ...formData, email: e.target.value });
-                      handleFormTouch();
-                    }}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#ebdcc9]/40 text-sm text-[#1c1209] font-bold cursor-not-allowed shadow-inner focus:outline-none"
                   />
                 </div>
               </div>
@@ -203,7 +281,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full py-4 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-75"
+                className="w-full py-4 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-75 cursor-pointer"
               >
                 {status === 'loading' ? (
                   <>
