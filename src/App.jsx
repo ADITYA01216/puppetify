@@ -8,6 +8,7 @@ import FaqSection from './components/FaqSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
+import ChatbotWidget from './components/ChatbotWidget';
 
 export default function App() {
   const scrollToWorkflows = () => {
@@ -64,6 +65,9 @@ export default function App() {
       <Footer 
         onAction={scrollToWorkflows}
       />
+
+      {/* Floating Chatbot Widget (n8n integration) */}
+      <ChatbotWidget />
 
     </div>
   );
