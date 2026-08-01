@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, KeyRound, Loader2 } from 'lucide-react';
+import { X, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, Check } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import GoogleAuthModal, { GoogleIcon } from './GoogleAuthModal';
 
 export default function AuditModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
@@ -13,30 +14,30 @@ export default function AuditModal({ isOpen, onClose }) {
     websiteUrl: ''
   });
 
-  const [generatedCode, setGeneratedCode] = useState('');
-  const [inputCode, setInputCode] = useState('');
-  const [codeError, setCodeError] = useState('');
+  const [googleUser, setGoogleUser] = useState(null);
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleGoToVerification = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email) return;
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedCode(code);
-    setInputCode(code);
-    setCodeError('');
-    setStep(3);
+  const handleGoogleSelect = (user) => {
+    setGoogleUser(user);
+    setFormData((prev) => ({
+      ...prev,
+      name: user.name,
+      email: user.email
+    }));
+    setAuthError('');
   };
 
   const handleFinish = async (e) => {
-    if (e) e.preventDefault();
+    e.preventDefault();
 
-    if (inputCode !== generatedCode) {
-      setCodeError('Incorrect code. Please enter the 6-digit verification code.');
+    if (!googleUser) {
+      setAuthError('Please sign in with Google to verify identity first.');
+      setIsGoogleModalOpen(true);
       return;
     }
 
@@ -49,11 +50,11 @@ export default function AuditModal({ isOpen, onClose }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          name: googleUser.name,
+          email: googleUser.email,
           message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`,
-          verified: true,
-          verificationCode: generatedCode
+          authProvider: 'Google OAuth 2.0',
+          verifiedByGoogle: true
         }),
       });
     } catch (err) {
@@ -71,6 +72,12 @@ export default function AuditModal({ isOpen, onClose }) {
 
   return (
     <div className="modal-overlay">
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        onSelectAccount={handleGoogleSelect}
+      />
+
       <div className="modal-content relative">
         
         {/* Close Button */}
@@ -95,7 +102,7 @@ export default function AuditModal({ isOpen, onClose }) {
                   Free 15-Min Automation Audit
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">
-                  We'll map out your strings & show you where to save 15+ hours/week.
+                  Google OAuth Identity Verified Audit Booking
                 </p>
               </div>
             </div>
@@ -104,7 +111,6 @@ export default function AuditModal({ isOpen, onClose }) {
             <div className="flex items-center gap-2 mb-6">
               <div className={`h-1.5 flex-1 rounded-full ${step >= 1 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
               <div className={`h-1.5 flex-1 rounded-full ${step >= 2 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
-              <div className={`h-1.5 flex-1 rounded-full ${step >= 3 ? 'bg-[var(--primary)]' : 'bg-[var(--bg-subtle)]'}`}></div>
             </div>
 
             {step === 1 ? (
@@ -156,8 +162,51 @@ export default function AuditModal({ isOpen, onClose }) {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-            ) : step === 2 ? (
-              <form onSubmit={handleGoToVerification} className="space-y-4">
+            ) : (
+              <form onSubmit={handleFinish} className="space-y-4">
+                
+                {/* Google Login Badge */}
+                {!googleUser ? (
+                  <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-center space-y-2">
+                    <p className="text-[11px] font-bold text-blue-900">
+                      Sign in with Google to verify your booking identity
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setIsGoogleModalOpen(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-gray-800 border border-gray-300 font-bold text-xs shadow-sm hover:bg-gray-50 transition-all"
+                    >
+                      <GoogleIcon />
+                      <span>Sign in with Google</span>
+                    </button>
+                    {authError && (
+                      <p className="text-[11px] text-red-600 font-bold">{authError}</p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
+                        {googleUser.initials}
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-gray-900 flex items-center gap-1">
+                          {googleUser.name} <Check className="w-3 h-3 text-emerald-600" />
+                        </div>
+                        <div className="text-[10px] text-gray-500 font-mono">{googleUser.email}</div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsGoogleModalOpen(true)}
+                      className="text-[10px] font-bold text-blue-600 underline"
+                    >
+                      Switch
+                    </button>
+                  </div>
+                )}
+
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
                     Your Name
@@ -165,7 +214,8 @@ export default function AuditModal({ isOpen, onClose }) {
                   <input 
                     type="text" 
                     required
-                    placeholder="Jane Doe"
+                    readOnly={!!googleUser}
+                    placeholder="Sign in with Google..."
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-main)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
@@ -179,7 +229,8 @@ export default function AuditModal({ isOpen, onClose }) {
                   <input 
                     type="email" 
                     required
-                    placeholder="jane@yourbusiness.com"
+                    readOnly={!!googleUser}
+                    placeholder="Sign in with Google..."
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-main)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
@@ -209,78 +260,14 @@ export default function AuditModal({ isOpen, onClose }) {
                   </button>
                   <button 
                     type="submit"
-                    className="btn-primary flex-1 justify-center py-3 text-xs"
+                    disabled={isSubmitting}
+                    className="btn-primary flex-1 justify-center py-3 text-xs disabled:opacity-75"
                   >
                     <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
-                    <span>Verify Identity & Proceed</span>
+                    <span>Confirm Free Audit Booking</span>
                   </button>
                 </div>
               </form>
-            ) : (
-              /* Step 3: Verification */
-              <div className="space-y-4 text-center">
-                <div className="w-12 h-12 rounded-2xl bg-[#f0e3ce] border-2 border-[#8c5e35] mx-auto flex items-center justify-center text-[#7c4a1e]">
-                  <KeyRound className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="font-heading text-lg font-bold text-[var(--text-primary)]">
-                    Verify Email Identity
-                  </h4>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    Security Passcode generated for <strong className="text-[var(--text-primary)]">{formData.email}</strong>
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-[#fdf8f0] border border-[#d8c3a5] space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#8c5e35]">
-                    Security Passcode
-                  </div>
-                  <div className="font-mono text-2xl font-black text-[#2b1f15]">
-                    {generatedCode}
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    type="text"
-                    maxLength={6}
-                    value={inputCode}
-                    onChange={(e) => setInputCode(e.target.value)}
-                    className="w-full text-center font-mono text-lg font-black py-2.5 px-3 rounded-xl border-2 border-[#8c5e35] bg-white text-[#1c1209] tracking-widest focus:outline-none shadow-inner"
-                  />
-                  {codeError && (
-                    <p className="text-xs text-red-600 font-bold mt-1">{codeError}</p>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <button 
-                    type="button" 
-                    onClick={() => setStep(2)}
-                    className="btn-secondary py-2.5 text-xs"
-                  >
-                    Back
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={handleFinish}
-                    disabled={isSubmitting}
-                    className="btn-primary flex-1 justify-center py-2.5 text-xs disabled:opacity-75"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Verifying...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
-                        <span>Verify & Confirm Booking</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
             )}
 
           </div>
@@ -293,7 +280,7 @@ export default function AuditModal({ isOpen, onClose }) {
               Verified Audit Confirmed!
             </h3>
             <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto">
-              We have received your verified audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong> (Verified Code: <span className="font-mono font-bold text-[#8c5e35]">{generatedCode}</span>). Our automation engineer will send a calendar invite to <span className="text-[var(--primary)] font-mono">{formData.email}</span>.
+              We have received your Google OAuth verified audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong> (<span className="font-mono text-[#8c5e35]">{formData.email}</span>). Our team will send a calendar invite shortly.
             </p>
             <button 
               onClick={onClose}
