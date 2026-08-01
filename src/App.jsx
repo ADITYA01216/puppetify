@@ -5,6 +5,7 @@ import IntegrationsBar from './components/IntegrationsBar';
 import WorkflowVisualizer from './components/WorkflowVisualizer';
 import ProblemSection from './components/ProblemSection';
 import FaqSection from './components/FaqSection';
+import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
 
@@ -52,6 +53,11 @@ export default function App() {
         <FaqSection 
           onAction={scrollToWorkflows}
         />
+
+        <WoodenSectionDivider />
+
+        {/* n8n Webhook Contact Form Section */}
+        <ContactSection />
       </main>
 
       {/* Footer */}

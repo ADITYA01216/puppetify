@@ -16,7 +16,7 @@ export default function AuditModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  const handleFinish = (e) => {
+  const handleFinish = async (e) => {
     e.preventDefault();
     setIsCompleted(true);
     confetti({
@@ -24,6 +24,22 @@ export default function AuditModal({ isOpen, onClose }) {
       spread: 80,
       origin: { y: 0.5 }
     });
+
+    try {
+      await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`
+        }),
+      });
+    } catch (err) {
+      console.error('Webhook error:', err);
+    }
   };
 
   return (

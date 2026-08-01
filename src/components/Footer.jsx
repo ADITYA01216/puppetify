@@ -57,6 +57,7 @@ export default function Footer({ onOpenDemo }) {
               <li><a href="#workflows" className="hover:text-[var(--primary)] transition-colors">Workflows</a></li>
               <li><a href="#problem" className="hover:text-[var(--primary)] transition-colors">Why Puppetify</a></li>
               <li><a href="#faq" className="hover:text-[var(--primary)] transition-colors">FAQ</a></li>
+              <li><a href="#contact" className="hover:text-[var(--primary)] transition-colors">Contact Us</a></li>
             </ul>
           </div>
 

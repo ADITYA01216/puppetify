@@ -25,6 +25,9 @@ export default function Navbar({ onAction }) {
           <a href="#faq" className="text-[#2b1a0e] font-bold text-sm hover:opacity-70 transition-opacity">
             FAQ
           </a>
+          <a href="#contact" className="text-[#2b1a0e] font-bold text-sm hover:opacity-70 transition-opacity">
+            Contact
+          </a>
         </div>
 
         {/* Right buttons */}
@@ -36,10 +39,10 @@ export default function Navbar({ onAction }) {
             Explore Workflows
           </a>
           <a 
-            href="#workflows"
+            href="#contact"
             className="px-5 py-2.5 text-sm font-bold text-white bg-[#1c1209] hover:bg-[#8c5e35] rounded-xl transition-all shadow-md active:scale-95"
           >
-            Get Started
+            Contact Us
           </a>
         </div>
 
