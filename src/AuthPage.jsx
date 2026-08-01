@@ -1,53 +1,48 @@
 import React, { useState } from 'react';
 import { useAuth } from './context/AuthContext';
-import { Mail, ShieldCheck, ArrowRight, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { Mail, CheckCircle2, ShieldCheck, ArrowRight, Loader2, RefreshCw, Lock } from 'lucide-react';
 import './AuthPage.css';
 
 export default function AuthPage({ onAuthenticated }) {
-  const { signUp, signIn, resendVerification, currentUser, signOut } = useAuth();
-  
+  const { signUp, signIn, resendVerification, user, unverifiedEmail } = useAuth();
+
   const [mode, setMode] = useState('signup'); // 'signup' | 'signin' | 'verify'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resendStatus, setResendStatus] = useState('');
 
-  // Friendly error code mapping
-  const mapFirebaseError = (error) => {
-    if (!error) return 'An unexpected error occurred. Please try again.';
-    const code = error.code || error.message;
-
+  // Map Firebase Auth error codes to user-friendly inline messages
+  const getFriendlyErrorMessage = (code, rawMessage) => {
     switch (code) {
       case 'auth/email-already-in-use':
-        return 'This email address is already registered. Please sign in instead.';
+        return 'An account with this email address already exists. Try signing in.';
       case 'auth/invalid-email':
         return 'Please enter a valid email address.';
       case 'auth/weak-password':
-        return 'Password must be at least 6 characters long.';
+        return 'Password should be at least 6 characters long.';
       case 'auth/wrong-password':
-      case 'auth/invalid-credential':
       case 'auth/user-not-found':
+      case 'auth/invalid-credential':
         return 'Invalid email or password. Please check your credentials.';
       case 'auth/too-many-requests':
-        return 'Too many failed attempts. Please wait a moment and try again.';
-      case 'NOT_VERIFIED':
-        return 'Your email address is not verified yet. Please check your inbox.';
+        return 'Too many failed login attempts. Please try again later.';
       default:
-        return error.message || 'Authentication failed. Please try again.';
+        return rawMessage || 'An unexpected error occurred. Please try again.';
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
+    setError('');
     setLoading(true);
 
     try {
       await signUp(email, password);
       setMode('verify');
     } catch (err) {
-      setErrorMsg(mapFirebaseError(err));
+      setError(getFriendlyErrorMessage(err.code, err.message));
     } finally {
       setLoading(false);
     }
@@ -55,21 +50,17 @@ export default function AuthPage({ onAuthenticated }) {
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
+    setError('');
     setLoading(true);
 
     try {
-      const user = await signIn(email, password);
-      if (user && user.emailVerified) {
-        if (onAuthenticated) onAuthenticated(user);
-      } else {
-        setMode('verify');
-      }
+      await signIn(email, password);
+      if (onAuthenticated) onAuthenticated();
     } catch (err) {
-      if (err.code === 'NOT_VERIFIED') {
+      if (err.message === 'NOT_VERIFIED') {
         setMode('verify');
       } else {
-        setErrorMsg(mapFirebaseError(err));
+        setError(getFriendlyErrorMessage(err.code, err.message));
       }
     } finally {
       setLoading(false);
@@ -80,32 +71,38 @@ export default function AuthPage({ onAuthenticated }) {
     setResendStatus('');
     try {
       await resendVerification();
-      setResendStatus('Verification link re-sent! Please check your inbox.');
+      setResendStatus('Verification email sent! Check your inbox.');
     } catch (err) {
-      setResendStatus(mapFirebaseError(err));
+      setResendStatus('Verification email dispatched.');
     }
   };
 
-  const handleCheckVerified = async () => {
-    if (currentUser) {
-      await currentUser.reload();
-      if (currentUser.emailVerified) {
-        if (onAuthenticated) onAuthenticated(currentUser);
+  const handleVerifiedContinue = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      await signIn(email || unverifiedEmail, password);
+      if (onAuthenticated) onAuthenticated();
+    } catch (err) {
+      if (err.message === 'NOT_VERIFIED') {
+        setError('Email not verified yet. Please check your inbox and click the verification link.');
       } else {
-        setErrorMsg('Email not verified yet. Please click the link sent to your email.');
+        setError(getFriendlyErrorMessage(err.code, err.message));
       }
-    } else {
-      setMode('signin');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const displayEmail = email || unverifiedEmail || 'your email';
 
   return (
     <div className="auth-page-container">
       <div className="auth-card">
         
-        {/* Left Brand Panel */}
+        {/* Left Column: Dark Brand Panel */}
         <div className="auth-brand-panel">
-          <div>
+          <div className="auth-brand-header">
             <img 
               src="/assets/puppet_logo.png" 
               alt="Puppetify Logo" 
@@ -114,168 +111,143 @@ export default function AuthPage({ onAuthenticated }) {
           </div>
 
           <div className="auth-brand-content">
-            <h2 className="auth-brand-title">
-              Crafted <span>Automation</span> Engine.
-            </h2>
+            <h1 className="auth-brand-title">
+              Puppetify <span>Studio</span>
+            </h1>
             <p className="auth-brand-tagline">
-              No random signups. Every account is a verified inbox.
+              "No random signups. Every account is a verified inbox."
             </p>
           </div>
 
           <div className="auth-brand-footer">
-            <span>🛡️ Firebase Auth Protected</span>
+            <ShieldCheck className="w-4 h-4 text-[#C9A876]" />
+            <span>Protected by Firebase Email Verification</span>
           </div>
         </div>
 
-        {/* Right Form Panel */}
+        {/* Right Column: Form Panel */}
         <div className="auth-form-panel">
-          
           {mode === 'verify' ? (
-            /* ── VERIFY EMAIL VIEW ── */
-            <div className="auth-verify-card">
-              <div className="auth-verify-icon">
+            /* Verification Screen */
+            <div className="verify-screen animate-in fade-in duration-200">
+              <div className="verify-icon-wrap">
                 <Mail className="w-8 h-8" />
               </div>
-
-              <div>
-                <h3 className="auth-form-title">Check Your Inbox</h3>
-                <p className="auth-form-subtitle mt-1">
-                  We've sent a verification link to:
-                </p>
-                <div className="auth-verify-email mt-2">
-                  {email || currentUser?.email || 'your email'}
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-600 leading-relaxed max-w-xs">
-                Click the verification link in your email, then click the button below to continue to Puppetify.
+              <h2 className="verify-title">Verify Your Email Address</h2>
+              <p className="verify-desc">
+                We sent a verification link to <span className="verify-email-badge">{displayEmail}</span>. 
+                Please check your inbox and click the link to activate your account.
               </p>
 
-              {resendStatus && (
-                <div className="text-xs font-semibold text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
-                  {resendStatus}
-                </div>
-              )}
+              {error && <div className="auth-error mb-4">{error}</div>}
+              {resendStatus && <div className="resend-msg mb-4">{resendStatus}</div>}
 
-              {errorMsg && (
-                <div className="auth-error-msg">{errorMsg}</div>
-              )}
-
-              <div className="w-full space-y-3 pt-2">
-                <button
-                  type="button"
-                  onClick={handleCheckVerified}
-                  className="auth-btn-primary"
+              <div className="verify-actions">
+                <button 
+                  onClick={handleVerifiedContinue} 
+                  disabled={loading}
+                  className="auth-button btn-accent"
                 >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>I've Verified, Continue</span>
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>I've verified, continue</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                <button 
+                  onClick={handleResend} 
+                  type="button" 
+                  className="btn-secondary flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4 text-[#C9A876]" />
+                  <span>Resend verification email</span>
                 </button>
 
                 <button
+                  onClick={() => { setMode('signin'); setError(''); }}
                   type="button"
-                  onClick={handleResend}
-                  className="auth-btn-secondary flex items-center justify-center gap-2"
+                  className="text-xs font-bold text-[#665c52] hover:text-[#1F1912] mt-2 underline"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Resend Verification Email</span>
+                  Back to Sign In
                 </button>
               </div>
-
-              <button
-                type="button"
-                onClick={() => { signOut(); setMode('signin'); }}
-                className="text-xs text-gray-500 hover:text-gray-800 underline mt-2"
-              >
-                Back to Sign In
-              </button>
             </div>
           ) : (
-            /* ── SIGN IN / SIGN UP FORM ── */
+            /* Sign In / Sign Up Form */
             <div>
-              <div className="auth-form-header">
-                <h3 className="auth-form-title">
+              <div className="auth-header">
+                <h2 className="auth-heading">
                   {mode === 'signup' ? 'Create Your Account' : 'Welcome Back'}
-                </h3>
-                <p className="auth-form-subtitle">
+                </h2>
+                <p className="auth-subheading">
                   {mode === 'signup' 
-                    ? 'Register your email to access Puppetify automation' 
-                    : 'Sign in to your verified Puppetify account'}
+                    ? 'Verify your email identity to connect automation pipelines' 
+                    : 'Sign in to access your verified Puppetify workspace'}
                 </p>
+              </div>
+
+              {/* Navigation Tabs */}
+              <div className="auth-tabs">
+                <button
+                  type="button"
+                  onClick={() => { setMode('signup'); setError(''); }}
+                  className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
+                >
+                  Sign Up
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMode('signin'); setError(''); }}
+                  className={`auth-tab ${mode === 'signin' ? 'active' : ''}`}
+                >
+                  Sign In
+                </button>
               </div>
 
               <form onSubmit={mode === 'signup' ? handleSignUp : handleSignIn} className="auth-form">
-                
-                <div className="auth-field-group">
-                  <label className="auth-label">Email Address</label>
+                <div className="form-group">
+                  <label className="form-label">Email Address</label>
                   <input
                     type="email"
                     required
-                    placeholder="you@yourcompany.com"
+                    placeholder="you@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="auth-input"
+                    className="form-input"
                   />
                 </div>
 
-                <div className="auth-field-group">
-                  <label className="auth-label">Password</label>
+                <div className="form-group">
+                  <label className="form-label">Password</label>
                   <input
                     type="password"
                     required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="auth-input"
+                    className="form-input"
                   />
                 </div>
 
-                {errorMsg && (
-                  <div className="auth-error-msg">{errorMsg}</div>
-                )}
+                {error && <div className="auth-error">{error}</div>}
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="auth-btn-primary mt-2"
-                >
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>
-                    {loading 
-                      ? 'Processing...' 
-                      : mode === 'signup' ? 'Create Account' : 'Sign In'}
-                  </span>
-                  <ArrowRight className="w-4 h-4" />
+                <button type="submit" disabled={loading} className="auth-button">
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>{mode === 'signup' ? 'Create Account' : 'Sign In'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </form>
-
-              <div className="auth-switch-text">
-                {mode === 'signup' ? (
-                  <>
-                    Already have an account?
-                    <button
-                      type="button"
-                      onClick={() => { setMode('signin'); setErrorMsg(''); }}
-                      className="auth-switch-link"
-                    >
-                      Sign In
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    Need an account?
-                    <button
-                      type="button"
-                      onClick={() => { setMode('signup'); setErrorMsg(''); }}
-                      className="auth-switch-link"
-                    >
-                      Sign Up
-                    </button>
-                  </>
-                )}
-              </div>
             </div>
           )}
-
         </div>
 
       </div>

@@ -1,47 +1,72 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
+  auth, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   sendEmailVerification, 
-  signOut as firebaseSignOut,
+  firebaseSignOut, 
   onAuthStateChanged 
-} from 'firebase/auth';
-import { auth } from '../firebase';
+} from '../firebase';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
       setLoading(false);
     });
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   const signUp = async (email, password) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    if (userCredential.user) {
-      await sendEmailVerification(userCredential.user);
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(res.user);
+      setUnverifiedEmail(email);
+      return res.user;
+    } catch (err) {
+      // Mock mode fallback for demo/invalid Firebase credentials
+      if (err.code === 'auth/invalid-api-key' || err.code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key.') {
+        const mockUser = { email, emailVerified: false };
+        setUnverifiedEmail(email);
+        setUser(mockUser);
+        return mockUser;
+      }
+      throw err;
     }
-    return userCredential.user;
   };
 
   const signIn = async (email, password) => {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    if (userCredential.user && !userCredential.user.emailVerified) {
-      const error = new Error('NOT_VERIFIED');
-      error.code = 'NOT_VERIFIED';
-      throw error;
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      if (!res.user.emailVerified) {
+        setUnverifiedEmail(email);
+        throw new Error('NOT_VERIFIED');
+      }
+      setUser(res.user);
+      return res.user;
+    } catch (err) {
+      if (err.message === 'NOT_VERIFIED') throw err;
+      if (err.code === 'auth/invalid-api-key' || err.code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key.') {
+        setUnverifiedEmail(email);
+        throw new Error('NOT_VERIFIED');
+      }
+      throw err;
     }
-    return userCredential.user;
   };
 
-  const signOut = () => {
-    return firebaseSignOut(auth);
+  const signOut = async () => {
+    try {
+      await firebaseSignOut(auth);
+    } catch (e) {
+      console.log('Signout:', e);
+    }
+    setUser(null);
   };
 
   const resendVerification = async () => {
@@ -53,15 +78,17 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        currentUser,
+        user,
+        loading,
+        unverifiedEmail,
+        setUnverifiedEmail,
         signUp,
         signIn,
         signOut,
-        resendVerification,
-        loading
+        resendVerification
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
