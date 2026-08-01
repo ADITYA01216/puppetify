@@ -21,33 +21,47 @@ export function AuthProvider({ children }) {
 
   // Sync Firebase Auth State
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      if (firebaseUser) {
-        setUser({
-          uid: firebaseUser.uid,
-          name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
-          email: firebaseUser.email,
-          emailVerified: firebaseUser.emailVerified,
-          photoURL: firebaseUser.photoURL,
-          providerId: firebaseUser.providerData[0]?.providerId || 'password'
-        });
-      } else {
-        // Fallback to local session if present
-        const savedUser = localStorage.getItem('puppetify_user');
-        if (savedUser) {
-          try {
-            setUser(JSON.parse(savedUser));
-          } catch (e) {
-            setUser(null);
-          }
-        } else {
-          setUser(null);
-        }
+    if (!auth) {
+      const savedUser = localStorage.getItem('puppetify_user');
+      if (savedUser) {
+        try { setUser(JSON.parse(savedUser)); } catch (e) { setUser(null); }
       }
       setLoading(false);
-    });
+      return;
+    }
 
-    return () => unsubscribe();
+    try {
+      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        if (firebaseUser) {
+          setUser({
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || firebaseUser.email.split('@')[0],
+            email: firebaseUser.email,
+            emailVerified: firebaseUser.emailVerified,
+            photoURL: firebaseUser.photoURL,
+            providerId: firebaseUser.providerData[0]?.providerId || 'password'
+          });
+        } else {
+          // Fallback to local session if present
+          const savedUser = localStorage.getItem('puppetify_user');
+          if (savedUser) {
+            try {
+              setUser(JSON.parse(savedUser));
+            } catch (e) {
+              setUser(null);
+            }
+          } else {
+            setUser(null);
+          }
+        }
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    } catch (e) {
+      console.warn("Auth state sync fallback:", e);
+      setLoading(false);
+    }
   }, []);
 
   // Firebase Sign Up with Email & Password + Send Email Verification

@@ -11,9 +11,8 @@ import {
   updateProfile
 } from 'firebase/auth';
 
-// Firebase configuration for Puppetify
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForPuppetifyDemoModeAuth123",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDemoPuppetifyAuthKeyPlaceholder123",
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "puppetify.firebaseapp.com",
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "puppetify",
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "puppetify.appspot.com",
@@ -21,9 +20,17 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abc123def456"
 };
 
-// Initialize Firebase App
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
-export const auth = getAuth(app);
+let app = null;
+let authInstance = null;
+
+try {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+  authInstance = getAuth(app);
+} catch (e) {
+  console.warn("Firebase Auth initializing in fallback mode:", e.message);
+}
+
+export const auth = authInstance;
 export const googleProvider = new GoogleAuthProvider();
 
 export {
