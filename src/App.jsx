@@ -9,6 +9,8 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
 import ChatbotWidget from './components/ChatbotWidget';
+import { AuthProvider } from './context/AuthContext';
+import AuthModal from './components/AuthModal';
 
 export default function App() {
   const scrollToWorkflows = () => {
@@ -17,58 +19,63 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen text-[#1C1917] antialiased">
-      
-      {/* Navbar */}
-      <Navbar 
-        onAction={scrollToWorkflows}
-      />
-
-      {/* Main Single-Page Content */}
-      <main className="pt-20">
-        {/* Hero Section */}
-        <Hero 
-          onAction={scrollToWorkflows}
-        />
+    <AuthProvider>
+      <div className="min-h-screen text-[#1C1917] antialiased">
         
-        {/* Animated Integration Logos Bar */}
-        <IntegrationsBar />
+        {/* Global Account Authentication Modal */}
+        <AuthModal />
 
-        <WoodenSectionDivider />
-
-        {/* Live Interactive Workflow Visualizer */}
-        <WorkflowVisualizer 
+        {/* Navbar */}
+        <Navbar 
           onAction={scrollToWorkflows}
         />
 
-        <WoodenSectionDivider />
+        {/* Main Single-Page Content */}
+        <main className="pt-20">
+          {/* Hero Section */}
+          <Hero 
+            onAction={scrollToWorkflows}
+          />
+          
+          {/* Animated Integration Logos Bar */}
+          <IntegrationsBar />
 
-        {/* The Small Business Reality: Manual vs Autopilot */}
-        <ProblemSection 
+          <WoodenSectionDivider />
+
+          {/* Live Interactive Workflow Visualizer */}
+          <WorkflowVisualizer 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* The Small Business Reality: Manual vs Autopilot */}
+          <ProblemSection 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* Frequently Asked Questions */}
+          <FaqSection 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* n8n Webhook Contact Form Section */}
+          <ContactSection />
+        </main>
+
+        {/* Footer */}
+        <Footer 
           onAction={scrollToWorkflows}
         />
 
-        <WoodenSectionDivider />
+        {/* Floating Chatbot Widget (n8n integration) */}
+        <ChatbotWidget />
 
-        {/* Frequently Asked Questions */}
-        <FaqSection 
-          onAction={scrollToWorkflows}
-        />
-
-        <WoodenSectionDivider />
-
-        {/* n8n Webhook Contact Form Section */}
-        <ContactSection />
-      </main>
-
-      {/* Footer */}
-      <Footer 
-        onAction={scrollToWorkflows}
-      />
-
-      {/* Floating Chatbot Widget (n8n integration) */}
-      <ChatbotWidget />
-
-    </div>
+      </div>
+    </AuthProvider>
   );
 }
