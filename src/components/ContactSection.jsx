@@ -101,13 +101,8 @@ export default function ContactSection() {
               </span>
             </div>
             
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono text-[#8c5e35] bg-[#f0e3ce] px-3 py-1 rounded-full font-bold">
-                n8n Webhook Sync Active
-              </span>
-              <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
-                <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-              </div>
+            <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
+              <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
             </div>
           </div>
 
