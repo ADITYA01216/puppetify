@@ -2,45 +2,36 @@ import { initializeApp, getApps } from 'firebase/app';
 import { 
   getAuth, 
   GoogleAuthProvider, 
-  signInWithPopup, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   sendEmailVerification, 
-  signOut,
-  updateProfile,
-  onAuthStateChanged 
+  signOut, 
+  onAuthStateChanged,
+  signInWithPopup,
+  updateProfile
 } from 'firebase/auth';
 
+// Firebase configuration for Puppetify
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || ""
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDummyKeyForPuppetifyDemoModeAuth123",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "puppetify.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "puppetify",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "puppetify.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789012",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789012:web:abc123def456"
 };
 
-let auth = null;
-let googleProvider = null;
-
-try {
-  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
-    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-    auth = getAuth(app);
-    googleProvider = new GoogleAuthProvider();
-  }
-} catch (error) {
-  console.warn("Firebase config notice: Firebase initialized in safe fallback mode.", error);
-}
+// Initialize Firebase App
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
 export {
-  auth,
-  googleProvider,
-  signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
   signOut,
-  updateProfile,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signInWithPopup,
+  updateProfile
 };

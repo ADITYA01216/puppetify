@@ -10,9 +10,9 @@ export default function AuthModal() {
     closeAuthModal, 
     authMode, 
     setAuthMode, 
-    signupWithFirebase, 
-    signinWithFirebase, 
-    loginWithGoogleFirebase 
+    signupWithEmail, 
+    signinWithEmail, 
+    signinWithGoogle 
   } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -55,9 +55,9 @@ export default function AuthModal() {
 
     try {
       if (authMode === 'signup') {
-        await signupWithFirebase(formData.name, formData.email, formData.password);
+        await signupWithEmail(formData.email, formData.password, formData.name);
       } else {
-        await signinWithFirebase(formData.email, formData.password);
+        await signinWithEmail(formData.email, formData.password);
       }
       confetti({
         particleCount: 100,
@@ -65,7 +65,7 @@ export default function AuthModal() {
         origin: { y: 0.6 }
       });
     } catch (err) {
-      setError(err.message || 'Authentication error. Please check your details.');
+      setError(err.message || 'Authentication failed.');
     } finally {
       setLoading(false);
     }
@@ -74,14 +74,14 @@ export default function AuthModal() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await loginWithGoogleFirebase();
+      await signinWithGoogle();
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
     } catch (err) {
-      setError('Google Sign-In error. Please try again.');
+      setError('Google Sign-In failed.');
     } finally {
       setLoading(false);
     }
