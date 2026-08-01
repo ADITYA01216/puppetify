@@ -5,7 +5,15 @@ import { GoogleIcon } from './GoogleAuthModal';
 import confetti from 'canvas-confetti';
 
 export default function AuthModal() {
-  const { isAuthModalOpen, closeAuthModal, authMode, setAuthMode, login } = useAuth();
+  const { 
+    isAuthModalOpen, 
+    closeAuthModal, 
+    authMode, 
+    setAuthMode, 
+    signupWithFirebase, 
+    signinWithFirebase, 
+    loginWithGoogleFirebase 
+  } = useAuth();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -19,7 +27,7 @@ export default function AuthModal() {
 
   if (!isAuthModalOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -45,30 +53,38 @@ export default function AuthModal() {
 
     setLoading(true);
 
-    setTimeout(() => {
-      login({
-        name: formData.name || formData.email.split('@')[0],
-        email: formData.email
-      });
-      setLoading(false);
+    try {
+      if (authMode === 'signup') {
+        await signupWithFirebase(formData.name, formData.email, formData.password);
+      } else {
+        await signinWithFirebase(formData.email, formData.password);
+      }
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
-    }, 600);
+    } catch (err) {
+      setError(err.message || 'Authentication error. Please check your details.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleGoogleSignIn = () => {
-    login({
-      name: 'Aditya Agarwal',
-      email: 'aditya.puppetify@gmail.com'
-    });
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await loginWithGoogleFirebase();
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    } catch (err) {
+      setError('Google Sign-In error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
