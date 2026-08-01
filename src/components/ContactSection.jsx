@@ -1,65 +1,68 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle2, Mail, User, MessageSquare, ShieldCheck, Loader2, ArrowRight, Check, LogIn } from 'lucide-react';
+import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { useAuth } from '../context/AuthContext';
-import { GoogleIcon } from './GoogleAuthModal';
+import { getIdempotencyKey, clearIdempotencyKey, apiFetch } from '../utils/auth';
 
 export default function ContactSection() {
-  const { user, loginWithGoogle, openAuthModal } = useAuth();
   const [formData, setFormData] = useState({
+    name: '',
+    email: '',
     message: ''
   });
 
-  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success'
-  const [authError, setAuthError] = useState('');
+  const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleFormTouch = () => {
+    getIdempotencyKey('contact_form_idempotency_key');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!user) {
-      setAuthError('Google OAuth authentication required! Please sign in with your Google account.');
-      openAuthModal();
-      return;
-    }
-
     setStatus('loading');
+    setErrorMessage('');
+
+    const idempotencyKey = getIdempotencyKey('contact_form_idempotency_key');
 
     try {
-      await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
+      const response = await apiFetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
-          name: user.name,
-          email: user.email,
+          name: formData.name,
+          email: formData.email,
           message: formData.message,
-          authProvider: 'Google OAuth 2.0',
-          verifiedByGoogle: true
+          idempotencyKey,
         }),
       });
 
-      setStatus('success');
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      if (response.ok || response.status === 200 || response.status === 201 || response.status === 409) {
+        clearIdempotencyKey('contact_form_idempotency_key');
+        setStatus('success');
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } else {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || 'Server error. Please try submitting again.');
+      }
     } catch (err) {
       console.error('Submission error:', err);
-      setStatus('success');
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 }
-      });
+      if (err.message && err.message.includes('already')) {
+        clearIdempotencyKey('contact_form_idempotency_key');
+        setStatus('success');
+        return;
+      }
+      setErrorMessage(err.message || 'Unable to process submission. Please check your network and try again.');
+      setStatus('error');
     }
   };
 
   return (
     <section id="contact" className="py-20 relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/assets/wood_bg.png')" }}>
       
-      {/* Vignette Overlay */}
+      {/* Cinematic Vignette */}
       <div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{
@@ -72,8 +75,8 @@ export default function ContactSection() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[rgba(250,244,234,0.92)] border border-[rgba(180,140,90,0.4)] text-xs font-bold text-[#2b1a0e] shadow-sm">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#8c5e35]" />
-            Google OAuth 2.0 Identity Verified Intake
+            <Sparkles className="w-3.5 h-3.5 text-[#8c5e35]" />
+            Direct Marionette Dispatch
           </div>
           
           <h2 className="text-3xl sm:text-5xl font-black text-[#1a0f07] tracking-tight">
@@ -81,21 +84,21 @@ export default function ContactSection() {
           </h2>
           
           <p className="text-base sm:text-lg text-[#4a3520] font-medium">
-            Sign in with Google to verify identity & send your automation requirements directly to our n8n pipeline.
+            Have a custom workflow in mind? Send us a message and our automation engineers will build your custom string pipeline.
           </p>
         </div>
 
         {/* Contact Form Container */}
         <div className="bg-[rgba(255,253,249,0.96)] backdrop-blur-md border-2 border-[#8c5e35] rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           
-          {/* Top Decorative Brass Pegs */}
+          {/* Top Decorative Brass Knot Pegs */}
           <div className="flex items-center justify-between border-b border-[#e6ddd0] pb-6 mb-8">
             <div className="flex items-center gap-2">
               <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
                 <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
               <span className="text-xs font-mono font-bold tracking-wider text-[#7c4a1e] uppercase">
-                GOOGLE OAUTH VERIFIED AUTOMATION INTAKE
+                AUTOMATION INTAKE FORM
               </span>
             </div>
             
@@ -110,77 +113,28 @@ export default function ContactSection() {
                 <CheckCircle2 className="w-10 h-10 text-[#7c4a1e]" />
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-[#1c1209]">
-                Verified Message Dispatched!
+                Message Dispatched!
               </h3>
               <p className="text-sm sm:text-base text-[#4a3520] max-w-md mx-auto font-medium">
-                Thank you, <strong className="text-[#1c1209]">{user?.name}</strong>. Your Google account (<span className="text-[#7c4a1e] font-mono font-bold">{user?.email}</span>) was verified via Google OAuth 2.0. We will reply within 24 hours.
+                Thank you, <strong className="text-[#1c1209]">{formData.name}</strong>. Your inquiry has been sent to our n8n automation pipeline. We will reply to <span className="text-[#7c4a1e] font-mono font-bold">{formData.email}</span> within 24 hours.
               </p>
               <button
                 onClick={() => {
                   setStatus('idle');
-                  setFormData({ message: '' });
+                  setFormData({ name: '', email: '', message: '' });
                 }}
                 className="mt-4 px-6 py-2.5 rounded-xl bg-[#1c1209] text-white text-xs font-bold hover:bg-[#8c5e35] transition-all shadow-md"
               >
-                Send Another Verified Message
+                Send Another Message
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              {/* Google OAuth Identity Banner */}
-              {!user ? (
-                <div className="p-6 rounded-2xl bg-[#faf4ea] border-2 border-dashed border-[#8c5e35] text-center space-y-4">
-                  <div className="flex items-center justify-center gap-2 text-xs font-extrabold text-[#7c4a1e] uppercase tracking-wider">
-                    <ShieldCheck className="w-4 h-4 text-[#8c5e35]" />
-                    Google OAuth Sign In Required
-                  </div>
-                  <p className="text-xs text-[#5c3a1e] font-medium max-w-md mx-auto">
-                    To prevent spam & verify sender credibility, you must sign in with your Google account before sending a message.
-                  </p>
-                  
-                  <button
-                    type="button"
-                    onClick={loginWithGoogle}
-                    className="inline-flex items-center gap-3 px-6 py-3.5 rounded-xl bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 font-extrabold text-sm shadow-md hover:shadow-lg transition-all active:scale-95 mx-auto"
-                  >
-                    <GoogleIcon />
-                    <span>Sign in with Google</span>
-                  </button>
-
-                  {authError && (
-                    <p className="text-xs text-red-600 font-bold mt-2">{authError}</p>
-                  )}
-                </div>
-              ) : (
-                /* Authenticated Google Account Badge */
-                <div className="p-4 rounded-2xl bg-[#f0f9ff] border border-[#bae6fd] flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    {user.photoURL ? (
-                      <img src={user.photoURL} alt={user.name} className="w-10 h-10 rounded-full border border-sky-300 object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#1c1209] text-[#f5e096] font-extrabold flex items-center justify-center text-xs border border-[#8c5e35]">
-                        {user.name ? user.name[0].toUpperCase() : 'U'}
-                      </div>
-                    )}
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-extrabold text-gray-900">{user.name}</span>
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
-                          <Check className="w-3 h-3" /> Google OAuth Verified
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-gray-600 font-mono">{user.email}</div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={loginWithGoogle}
-                    className="text-xs font-bold text-blue-600 hover:text-blue-800 underline shrink-0"
-                  >
-                    Switch Account
-                  </button>
+              {errorMessage && (
+                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <div className="leading-relaxed">{errorMessage}</div>
                 </div>
               )}
 
@@ -189,30 +143,38 @@ export default function ContactSection() {
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
                     <User className="w-3.5 h-3.5 text-[#8c5e35]" />
-                    Verified Sender Name
+                    Your Name *
                   </label>
                   <input
                     type="text"
                     required
-                    readOnly
-                    placeholder="Sign in with Google first..."
-                    value={user ? user.name : ''}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#c8b293] bg-[#f5ebd9] text-sm font-medium text-[#2b1f15] cursor-not-allowed shadow-inner"
+                    placeholder="e.g. Sarah Jenkins"
+                    value={formData.name}
+                    onFocus={handleFormTouch}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      handleFormTouch();
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5 text-[#8c5e35]" />
-                    Verified Google Email
+                    Email Address *
                   </label>
                   <input
                     type="email"
                     required
-                    readOnly
-                    placeholder="Sign in with Google first..."
-                    value={user ? user.email : ''}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#c8b293] bg-[#f5ebd9] text-sm font-medium text-[#2b1f15] cursor-not-allowed shadow-inner"
+                    placeholder="sarah@yourbusiness.com"
+                    value={formData.email}
+                    onFocus={handleFormTouch}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      handleFormTouch();
+                    }}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -228,7 +190,11 @@ export default function ContactSection() {
                   rows={4}
                   placeholder="Describe your business and what repetitive tasks or app integrations you want automated..."
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  onFocus={handleFormTouch}
+                  onChange={(e) => {
+                    setFormData({ ...formData, message: e.target.value });
+                    handleFormTouch();
+                  }}
                   className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner resize-none"
                 />
               </div>
@@ -242,12 +208,11 @@ export default function ContactSection() {
                 {status === 'loading' ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Sending Verified Message...</span>
+                    <span>Connecting Puppet Strings...</span>
                   </>
                 ) : (
                   <>
-                    <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
-                    <span>Dispatch Message via Google OAuth</span>
+                    <span>Submit To Automation Engine</span>
                     <Send className="w-4 h-4" />
                   </>
                 )}

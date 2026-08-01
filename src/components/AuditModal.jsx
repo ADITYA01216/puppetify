@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, CheckCircle2, ArrowRight, Sparkles, ShieldCheck, Check } from 'lucide-react';
+import { X, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import GoogleAuthModal, { GoogleIcon } from './GoogleAuthModal';
 
 export default function AuditModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
@@ -13,35 +12,18 @@ export default function AuditModal({ isOpen, onClose }) {
     phone: '',
     websiteUrl: ''
   });
-
-  const [googleUser, setGoogleUser] = useState(null);
-  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [authError, setAuthError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleGoogleSelect = (user) => {
-    setGoogleUser(user);
-    setFormData((prev) => ({
-      ...prev,
-      name: user.name,
-      email: user.email
-    }));
-    setAuthError('');
-  };
-
   const handleFinish = async (e) => {
     e.preventDefault();
-
-    if (!googleUser) {
-      setAuthError('Please sign in with Google to verify identity first.');
-      setIsGoogleModalOpen(true);
-      return;
-    }
-
-    setIsSubmitting(true);
+    setIsCompleted(true);
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.5 }
+    });
 
     try {
       await fetch('https://puppet.app.n8n.cloud/webhook/contact-form', {
@@ -50,34 +32,18 @@ export default function AuditModal({ isOpen, onClose }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: googleUser.name,
-          email: googleUser.email,
-          message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`,
-          authProvider: 'Google OAuth 2.0',
-          verifiedByGoogle: true
+          name: formData.name,
+          email: formData.email,
+          message: `Audit Request: ${formData.businessType} - Time waste: ${formData.biggestTimeWaster} - Website: ${formData.websiteUrl || 'N/A'}`
         }),
       });
     } catch (err) {
       console.error('Webhook error:', err);
-    } finally {
-      setIsSubmitting(false);
-      setIsCompleted(true);
-      confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.5 }
-      });
     }
   };
 
   return (
     <div className="modal-overlay">
-      <GoogleAuthModal
-        isOpen={isGoogleModalOpen}
-        onClose={() => setIsGoogleModalOpen(false)}
-        onSelectAccount={handleGoogleSelect}
-      />
-
       <div className="modal-content relative">
         
         {/* Close Button */}
@@ -102,7 +68,7 @@ export default function AuditModal({ isOpen, onClose }) {
                   Free 15-Min Automation Audit
                 </h3>
                 <p className="text-xs text-[var(--text-muted)]">
-                  Google OAuth Identity Verified Audit Booking
+                  We'll map out your strings & show you where to save 15+ hours/week.
                 </p>
               </div>
             </div>
@@ -164,49 +130,6 @@ export default function AuditModal({ isOpen, onClose }) {
               </div>
             ) : (
               <form onSubmit={handleFinish} className="space-y-4">
-                
-                {/* Google Login Badge */}
-                {!googleUser ? (
-                  <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 text-center space-y-2">
-                    <p className="text-[11px] font-bold text-blue-900">
-                      Sign in with Google to verify your booking identity
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setIsGoogleModalOpen(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-gray-800 border border-gray-300 font-bold text-xs shadow-sm hover:bg-gray-50 transition-all"
-                    >
-                      <GoogleIcon />
-                      <span>Sign in with Google</span>
-                    </button>
-                    {authError && (
-                      <p className="text-[11px] text-red-600 font-bold">{authError}</p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px]">
-                        {googleUser.initials}
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-gray-900 flex items-center gap-1">
-                          {googleUser.name} <Check className="w-3 h-3 text-emerald-600" />
-                        </div>
-                        <div className="text-[10px] text-gray-500 font-mono">{googleUser.email}</div>
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsGoogleModalOpen(true)}
-                      className="text-[10px] font-bold text-blue-600 underline"
-                    >
-                      Switch
-                    </button>
-                  </div>
-                )}
-
                 <div>
                   <label className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
                     Your Name
@@ -214,8 +137,7 @@ export default function AuditModal({ isOpen, onClose }) {
                   <input 
                     type="text" 
                     required
-                    readOnly={!!googleUser}
-                    placeholder="Sign in with Google..."
+                    placeholder="Jane Doe"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-main)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
@@ -229,8 +151,7 @@ export default function AuditModal({ isOpen, onClose }) {
                   <input 
                     type="email" 
                     required
-                    readOnly={!!googleUser}
-                    placeholder="Sign in with Google..."
+                    placeholder="jane@yourbusiness.com"
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-[var(--border-color)] bg-[var(--bg-main)] text-xs text-[var(--text-primary)] focus:outline-none focus:border-[var(--primary)]"
@@ -260,11 +181,10 @@ export default function AuditModal({ isOpen, onClose }) {
                   </button>
                   <button 
                     type="submit"
-                    disabled={isSubmitting}
-                    className="btn-primary flex-1 justify-center py-3 text-xs disabled:opacity-75"
+                    className="btn-primary flex-1 justify-center py-3 text-xs"
                   >
-                    <ShieldCheck className="w-4 h-4 text-[#f5e096]" />
                     <span>Confirm Free Audit Booking</span>
+                    <Sparkles className="w-4 h-4" />
                   </button>
                 </div>
               </form>
@@ -277,10 +197,10 @@ export default function AuditModal({ isOpen, onClose }) {
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <h3 className="font-heading text-2xl font-bold text-[var(--text-primary)]">
-              Verified Audit Confirmed!
+              Audit Confirmed!
             </h3>
             <p className="text-xs text-[var(--text-secondary)] max-w-sm mx-auto">
-              We have received your Google OAuth verified audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong> (<span className="font-mono text-[#8c5e35]">{formData.email}</span>). Our team will send a calendar invite shortly.
+              We have received your audit request for <strong className="text-[var(--text-primary)]">{formData.name}</strong>. Our automation engineer will send a calendar invite to <span className="text-[var(--primary)] font-mono">{formData.email}</span> shortly.
             </p>
             <button 
               onClick={onClose}

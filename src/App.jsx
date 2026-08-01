@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import IntegrationsBar from './components/IntegrationsBar';
@@ -9,73 +9,86 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
 import ChatbotWidget from './components/ChatbotWidget';
-import { AuthProvider } from './context/AuthContext';
 import AuthModal from './components/AuthModal';
 
 export default function App() {
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   const scrollToWorkflows = () => {
     const el = document.getElementById('workflows');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setIsAuthModalOpen(true);
+    };
+    window.addEventListener('auth:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    };
+  }, []);
+
   return (
-    <AuthProvider>
-      <div className="min-h-screen text-[#1C1917] antialiased">
+    <div className="min-h-screen text-[#1C1917] antialiased">
+      
+      {/* Navbar */}
+      <Navbar 
+        onAction={scrollToWorkflows}
+        onOpenAuth={() => setIsAuthModalOpen(true)}
+      />
+
+      {/* Main Single-Page Content */}
+      <main className="pt-20">
+        {/* Hero Section */}
+        <Hero 
+          onAction={scrollToWorkflows}
+        />
         
-        {/* Global Account Authentication Modal */}
-        <AuthModal />
+        {/* Animated Integration Logos Bar */}
+        <IntegrationsBar />
 
-        {/* Navbar */}
-        <Navbar 
+        <WoodenSectionDivider />
+
+        {/* Live Interactive Workflow Visualizer */}
+        <WorkflowVisualizer 
           onAction={scrollToWorkflows}
         />
 
-        {/* Main Single-Page Content */}
-        <main className="pt-20">
-          {/* Hero Section */}
-          <Hero 
-            onAction={scrollToWorkflows}
-          />
-          
-          {/* Animated Integration Logos Bar */}
-          <IntegrationsBar />
+        <WoodenSectionDivider />
 
-          <WoodenSectionDivider />
-
-          {/* Live Interactive Workflow Visualizer */}
-          <WorkflowVisualizer 
-            onAction={scrollToWorkflows}
-          />
-
-          <WoodenSectionDivider />
-
-          {/* The Small Business Reality: Manual vs Autopilot */}
-          <ProblemSection 
-            onAction={scrollToWorkflows}
-          />
-
-          <WoodenSectionDivider />
-
-          {/* Frequently Asked Questions */}
-          <FaqSection 
-            onAction={scrollToWorkflows}
-          />
-
-          <WoodenSectionDivider />
-
-          {/* n8n Webhook Contact Form Section */}
-          <ContactSection />
-        </main>
-
-        {/* Footer */}
-        <Footer 
+        {/* The Small Business Reality: Manual vs Autopilot */}
+        <ProblemSection 
           onAction={scrollToWorkflows}
         />
 
-        {/* Floating Chatbot Widget (n8n integration) */}
-        <ChatbotWidget />
+        <WoodenSectionDivider />
 
-      </div>
-    </AuthProvider>
+        {/* Frequently Asked Questions */}
+        <FaqSection 
+          onAction={scrollToWorkflows}
+        />
+
+        <WoodenSectionDivider />
+
+        {/* n8n Webhook Contact Form Section */}
+        <ContactSection />
+      </main>
+
+      {/* Footer */}
+      <Footer 
+        onAction={scrollToWorkflows}
+      />
+
+      {/* Floating Chatbot Widget (n8n integration) */}
+      <ChatbotWidget />
+
+      {/* Passkey OTP Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+    </div>
   );
 }
