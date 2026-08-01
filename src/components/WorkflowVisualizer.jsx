@@ -272,7 +272,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
   };
 
   return (
-    <section id="how-it-works" className="py-20 relative overflow-hidden" style={{ backgroundColor: '#FAF6EE' }}>
+    <section id="workflows" className="py-20 relative overflow-hidden" style={{ backgroundColor: '#FAF6EE' }}>
       
       {/* Subtle decorative wood border line */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#8c5e35] to-transparent opacity-30" />

@@ -33,12 +33,6 @@ export default function Navbar({ onAction }) {
         {/* Right buttons */}
         <div className="flex items-center gap-3">
           <a 
-            href="#workflows"
-            className="px-4 py-2.5 text-sm font-bold text-[#2b1a0e] border border-[#2b1a0e] rounded-xl hover:bg-[rgba(43,26,14,0.07)] transition-all"
-          >
-            Explore Workflows
-          </a>
-          <a 
             href="#contact"
             className="px-5 py-2.5 text-sm font-bold text-white bg-[#1c1209] hover:bg-[#8c5e35] rounded-xl transition-all shadow-md active:scale-95"
           >
