@@ -21,6 +21,20 @@ export function AuthProvider({ children }) {
 
   // Listen for real-time Firebase Auth state changes
   useEffect(() => {
+    if (!auth) {
+      // Load saved user from local storage
+      try {
+        const savedUser = localStorage.getItem('puppetify_user');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+        }
+      } catch (e) {
+        setUser(null);
+      }
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         setUser({
@@ -32,7 +46,6 @@ export function AuthProvider({ children }) {
           provider: firebaseUser.providerData[0]?.providerId || 'firebase'
         });
       } else {
-        // Fallback to local session storage if available
         try {
           const savedUser = localStorage.getItem('puppetify_user');
           if (savedUser) {

@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { 
   getAuth, 
   GoogleAuthProvider, 
@@ -11,22 +11,31 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 
-// Firebase configuration (using standard Firebase credentials or environment variables)
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyDemoPuppetifyKey0000000000000",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "puppetify-app.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "puppetify-app",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "puppetify-app.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "1234567890",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:1234567890:web:demo123456"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || ""
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
+let auth = null;
+let googleProvider = null;
+
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "") {
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    auth = getAuth(app);
+    googleProvider = new GoogleAuthProvider();
+  }
+} catch (error) {
+  console.warn("Firebase config notice: Firebase initialized in safe fallback mode.", error);
+}
 
 export {
+  auth,
+  googleProvider,
   signInWithPopup,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
