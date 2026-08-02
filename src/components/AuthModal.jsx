@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Lock, KeyRound, CheckCircle2, AlertCircle, Loader2, X, LogOut, ShieldCheck, ArrowRight, RefreshCw } from 'lucide-react';
-import { requestOTP, verifyOTP, isAuthenticated, getUserEmail, clearSessionToken, getIdempotencyKey } from '../utils/auth';
+import { requestOTP, verifyOTP, getIdempotencyKey } from '../utils/auth';
+import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
+  const { authed, userEmail: authUserEmail, login, logout } = useAuth();
+
   const [step, setStep] = useState(1); // 1: Email, 2: OTP, 3: Signed In Success
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [infoMessage, setInfoMessage] = useState('');
-  const [authed, setAuthed] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       setError('');
       setInfoMessage('');
-      if (isAuthenticated()) {
-        setAuthed(true);
-        setCurrentUserEmail(getUserEmail());
+      if (authed) {
+        setCurrentUserEmail(authUserEmail);
         setStep(3);
       } else {
-        setAuthed(false);
         setStep(1);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, authed, authUserEmail]);
 
   // Touch form handler: ensure idempotencyKey is initialized on first touch
   const handleEmailTouch = () => {
@@ -121,7 +121,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
       if (res.alreadySubmitted) {
         setInfoMessage('Session active (previously submitted request).');
       }
-      setAuthed(true);
+      login(email, res.token);
       setCurrentUserEmail(email);
       setStep(3);
       if (onAuthSuccess) onAuthSuccess(res.token);
@@ -134,8 +134,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
   };
 
   const handleSignOut = () => {
-    clearSessionToken();
-    setAuthed(false);
+    logout();
     setCurrentUserEmail('');
     setStep(1);
     setEmail('');

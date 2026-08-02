@@ -1,30 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { User, LogIn, ShieldCheck } from 'lucide-react';
-import { isAuthenticated, getUserEmail } from '../utils/auth';
+import React from 'react';
+import { LogIn, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenAuth }) {
-  const [authed, setAuthed] = useState(false);
-  const [userEmail, setUserEmailState] = useState('');
-
-  const checkAuth = () => {
-    const isAuth = isAuthenticated();
-    setAuthed(isAuth);
-    if (isAuth) {
-      setUserEmailState(getUserEmail());
-    } else {
-      setUserEmailState('');
-    }
-  };
-
-  useEffect(() => {
-    checkAuth();
-    window.addEventListener('storage', checkAuth);
-    window.addEventListener('auth:unauthorized', checkAuth);
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-      window.removeEventListener('auth:unauthorized', checkAuth);
-    };
-  }, []);
+  const { authed, userEmail } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 transition-all" style={{ backgroundColor: 'rgba(250,244,234,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(160,120,70,0.2)' }}>

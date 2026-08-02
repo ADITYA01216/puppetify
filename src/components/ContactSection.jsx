@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2, Lock, LogIn, ShieldCheck } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { getIdempotencyKey, clearIdempotencyKey, apiFetch, isAuthenticated, getUserEmail } from '../utils/auth';
+import { getIdempotencyKey, clearIdempotencyKey, apiFetch } from '../utils/auth';
+import { useAuth } from '../context/AuthContext';
 
 export default function ContactSection({ onOpenAuth }) {
-  const [isAuthed, setIsAuthed] = useState(false);
+  const { authed: isAuthed, userEmail, logout } = useAuth();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,28 +16,12 @@ export default function ContactSection({ onOpenAuth }) {
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [errorMessage, setErrorMessage] = useState('');
 
-  const syncAuth = () => {
-    const authed = isAuthenticated();
-    setIsAuthed(authed);
-    if (authed) {
-      const userEmail = getUserEmail();
+  // Keep formData.email synchronized with authenticated userEmail
+  useEffect(() => {
+    if (isAuthed && userEmail) {
       setFormData(prev => ({ ...prev, email: userEmail }));
     }
-  };
-
-  useEffect(() => {
-    syncAuth();
-    window.addEventListener('storage', syncAuth);
-    const handleUnauth = () => {
-      setIsAuthed(false);
-      setErrorMessage('Your session expired, please sign in again');
-    };
-    window.addEventListener('auth:unauthorized', handleUnauth);
-    return () => {
-      window.removeEventListener('storage', syncAuth);
-      window.removeEventListener('auth:unauthorized', handleUnauth);
-    };
-  }, []);
+  }, [isAuthed, userEmail]);
 
   const handleFormTouch = () => {
     getIdempotencyKey('contact_form_idempotency_key');
@@ -43,8 +29,7 @@ export default function ContactSection({ onOpenAuth }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated()) {
-      setIsAuthed(false);
+    if (!isAuthed) {
       setErrorMessage('Your session expired, please sign in again');
       if (onOpenAuth) onOpenAuth();
       return;
@@ -60,7 +45,7 @@ export default function ContactSection({ onOpenAuth }) {
         method: 'POST',
         body: JSON.stringify({
           name: formData.name,
-          email: formData.email,
+          email: userEmail || formData.email,
           message: formData.message,
           idempotencyKey,
         }),
@@ -81,7 +66,7 @@ export default function ContactSection({ onOpenAuth }) {
     } catch (err) {
       console.error('Submission error:', err);
       if (err.message && (err.message.includes('expired') || err.message.includes('Unauthorized') || err.message.includes('sign in'))) {
-        setIsAuthed(false);
+        logout();
         setErrorMessage('Your session expired, please sign in again');
         setStatus('idle');
         return;

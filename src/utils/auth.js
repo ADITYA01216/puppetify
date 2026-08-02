@@ -18,12 +18,14 @@ export function getSessionToken() {
 export function setSessionToken(token) {
   if (token) {
     localStorage.setItem('session_token', token);
+    window.dispatchEvent(new CustomEvent('auth:change'));
   }
 }
 
 export function clearSessionToken() {
   localStorage.removeItem('session_token');
   localStorage.removeItem('user_email');
+  window.dispatchEvent(new CustomEvent('auth:change'));
 }
 
 export function getUserEmail() {
@@ -33,6 +35,7 @@ export function getUserEmail() {
 export function setUserEmail(email) {
   if (email) {
     localStorage.setItem('user_email', email);
+    window.dispatchEvent(new CustomEvent('auth:change'));
   }
 }
 

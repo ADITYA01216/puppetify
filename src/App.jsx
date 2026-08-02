@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
 import ChatbotWidget from './components/ChatbotWidget';
 import AuthModal from './components/AuthModal';
+import { AuthProvider } from './context/AuthContext';
 
 export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -30,65 +31,67 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen text-[#1C1917] antialiased">
-      
-      {/* Navbar */}
-      <Navbar 
-        onAction={scrollToWorkflows}
-        onOpenAuth={() => setIsAuthModalOpen(true)}
-      />
-
-      {/* Main Single-Page Content */}
-      <main className="pt-20">
-        {/* Hero Section */}
-        <Hero 
-          onAction={scrollToWorkflows}
-        />
+    <AuthProvider>
+      <div className="min-h-screen text-[#1C1917] antialiased">
         
-        {/* Animated Integration Logos Bar */}
-        <IntegrationsBar />
+        {/* Navbar */}
+        <Navbar 
+          onAction={scrollToWorkflows}
+          onOpenAuth={() => setIsAuthModalOpen(true)}
+        />
 
-        <WoodenSectionDivider />
+        {/* Main Single-Page Content */}
+        <main className="pt-20">
+          {/* Hero Section */}
+          <Hero 
+            onAction={scrollToWorkflows}
+          />
+          
+          {/* Animated Integration Logos Bar */}
+          <IntegrationsBar />
 
-        {/* Live Interactive Workflow Visualizer */}
-        <WorkflowVisualizer 
+          <WoodenSectionDivider />
+
+          {/* Live Interactive Workflow Visualizer */}
+          <WorkflowVisualizer 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* The Small Business Reality: Manual vs Autopilot */}
+          <ProblemSection 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* Frequently Asked Questions */}
+          <FaqSection 
+            onAction={scrollToWorkflows}
+          />
+
+          <WoodenSectionDivider />
+
+          {/* n8n Webhook Contact Form Section */}
+          <ContactSection onOpenAuth={() => setIsAuthModalOpen(true)} />
+        </main>
+
+        {/* Footer */}
+        <Footer 
           onAction={scrollToWorkflows}
         />
 
-        <WoodenSectionDivider />
+        {/* Floating Chatbot Widget (n8n integration) */}
+        <ChatbotWidget />
 
-        {/* The Small Business Reality: Manual vs Autopilot */}
-        <ProblemSection 
-          onAction={scrollToWorkflows}
+        {/* Passkey OTP Auth Modal */}
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
         />
 
-        <WoodenSectionDivider />
-
-        {/* Frequently Asked Questions */}
-        <FaqSection 
-          onAction={scrollToWorkflows}
-        />
-
-        <WoodenSectionDivider />
-
-        {/* n8n Webhook Contact Form Section */}
-        <ContactSection onOpenAuth={() => setIsAuthModalOpen(true)} />
-      </main>
-
-      {/* Footer */}
-      <Footer 
-        onAction={scrollToWorkflows}
-      />
-
-      {/* Floating Chatbot Widget (n8n integration) */}
-      <ChatbotWidget />
-
-      {/* Passkey OTP Auth Modal */}
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
-
-    </div>
+      </div>
+    </AuthProvider>
   );
 }
