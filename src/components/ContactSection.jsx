@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Send, CheckCircle2, Sparkles, Mail, User, MessageSquare, AlertCircle, Loader2, Lock, LogIn, ShieldCheck } from 'lucide-react';
-import confetti from 'canvas-confetti';
 import { getIdempotencyKey, clearIdempotencyKey, apiFetch } from '../utils/auth';
 import { useAuth } from '../context/AuthContext';
 
@@ -54,11 +53,6 @@ export default function ContactSection({ onOpenAuth }) {
       if (response.ok || response.status === 200 || response.status === 201 || response.status === 409) {
         clearIdempotencyKey('contact_form_idempotency_key');
         setStatus('success');
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
       } else {
         const data = await response.json().catch(() => ({}));
         throw new Error(data.message || 'Server error. Please try submitting again.');
