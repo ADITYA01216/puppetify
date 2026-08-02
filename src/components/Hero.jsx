@@ -124,48 +124,10 @@ export default function Hero({ onAction }) {
           </div>
         </div>
 
-        {/* ── RIGHT CONTENT — True Native Transparent PNG + Ports, Pulses & Robot Shadow ── */}
+        {/* ── RIGHT CONTENT — True Native Transparent PNG + Ports & Pulses ── */}
         <div className="w-full lg:w-[52%] flex items-center justify-center relative mt-6 lg:mt-0 select-none will-change-transform">
           <div className="relative w-full max-w-[720px]" style={{ transform: 'translateZ(0)' }}>
             
-            {/* 🤖 ROBOT ARM SHADOW SILHOUETTE (Optimized GPU Shadow Layer) */}
-            <div 
-              className="absolute top-[3%] left-[8%] w-[88%] h-[48%] pointer-events-none opacity-25 mix-blend-multiply transform translate-x-4 translate-y-3 z-0"
-              title="Automated Robot Shadow"
-              style={{ willChange: 'transform', transform: 'translateZ(0)' }}
-            >
-              <svg viewBox="0 0 500 300" className="w-full h-full text-[#1c1209]">
-                <g fill="currentColor">
-                  {/* Robotic Arm Base Cylinder & Hydraulics */}
-                  <rect x="330" y="55" width="170" height="46" rx="12" transform="rotate(-6, 415, 78)" />
-                  <circle cx="330" cy="72" r="30" />
-                  <circle cx="330" cy="72" r="15" fill="#faf4ea" opacity="0.2" />
-                  
-                  {/* Hydraulic Joint Piston Assembly */}
-                  <rect x="235" y="80" width="110" height="24" rx="8" transform="rotate(4, 290, 92)" />
-                  <circle cx="235" cy="90" r="22" />
-                  
-                  {/* Robotic Manipulator Claw & Wrist Actuators */}
-                  <polygon points="235,80 170,110 150,100 165,75 225,65" />
-                  
-                  {/* Mechanical Finger Joints manipulating crossbar */}
-                  <path d="M 165,90 Q 140,110 120,130 Q 110,140 100,125 Q 115,110 145,85 Z" />
-                  <path d="M 175,100 Q 155,125 135,148 Q 125,153 120,138 Q 140,118 160,98 Z" />
-                  <path d="M 185,108 Q 170,138 160,160 Q 150,165 145,150 Q 158,130 172,103 Z" />
-
-                  {/* Mechanical Robotic Crossbar Frame */}
-                  <rect x="70" y="120" width="190" height="16" rx="5" transform="rotate(-14, 165, 128)" />
-                  <rect x="150" y="70" width="16" height="150" rx="5" transform="rotate(-14, 158, 145)" />
-                  
-                  {/* Servo Motors / Robotic Gear Hubs on String Control Loops */}
-                  <circle cx="80" cy="142" r="12" />
-                  <circle cx="245" cy="102" r="12" />
-                  <circle cx="172" cy="62" r="10" />
-                  <circle cx="140" cy="198" r="10" />
-                </g>
-              </svg>
-            </div>
-
             {/* True Transparent PNG (0% White Background) */}
             <img
               src="/assets/puppet_hero_transparent.png"
