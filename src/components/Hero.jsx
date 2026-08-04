@@ -316,7 +316,7 @@ export default function Hero({ onAction }) {
                   </radialGradient>
                 </defs>
 
-                {STRING_CONFIG.map((sp, idx) => (
+                {STRING_CONFIG.map((sp) => (
                   <g key={sp.id}>
                     {/* CONNECTOR PORTS precisely aligned inside Card Rope Holes */}
                     <circle
@@ -333,42 +333,6 @@ export default function Hero({ onAction }) {
                       r="0.4"
                       fill="#2b190c"
                     />
-
-                    {/* STRING DATA PULSES (Flowing Energy Particles) */}
-                    <circle
-                      cx={`${sp.startX + (sp.endX - sp.startX) * 0.5}%`}
-                      cy={`${sp.startY + (sp.endY - sp.startX) * 0.5}%`}
-                      r="1.0"
-                      fill="#c8a96e"
-                      className="animate-ping"
-                      style={{ animationDelay: `${idx * 0.6}s`, animationDuration: '2.5s' }}
-                    />
-
-                    {/* Smooth data flow dot moving down the string */}
-                    <circle
-                      cx={`${sp.startX}%`}
-                      cy={`${sp.startY}%`}
-                      r="0.8"
-                      fill="#8c5e35"
-                      opacity="0.9"
-                    >
-                      <animate
-                        attributeName="cx"
-                        from={`${sp.startX}%`}
-                        to={`${sp.endX}%`}
-                        dur="3.2s"
-                        begin={`${idx * 0.6}s`}
-                        repeatCount="indefinite"
-                      />
-                      <animate
-                        attributeName="cy"
-                        from={`${sp.startY}%`}
-                        to={`${sp.endY}%`}
-                        dur="3.2s"
-                        begin={`${idx * 0.6}s`}
-                        repeatCount="indefinite"
-                      />
-                    </circle>
                   </g>
                 ))}
               </svg>
