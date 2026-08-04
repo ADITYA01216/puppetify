@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot, User, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Bot, User, Loader2, Zap } from 'lucide-react';
 
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +64,6 @@ export default function ChatbotWidget() {
       const data = await response.json();
       console.log('n8n Webhook JSON received:', data);
 
-      // Parse reply from n8n output structure ({ "reply": "..." } or [{ "reply": "..." }] or [{ "json": { "reply": "..." } }])
       let replyText = null;
 
       if (typeof data === 'string') {
@@ -111,11 +110,11 @@ export default function ChatbotWidget() {
       {/* ── EXPANDED CHAT PANEL ── */}
       {isOpen && (
         <div 
-          className="mb-4 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] bg-[#FFFDF9] border-2 border-[#8c5e35] rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-200"
-          style={{ backdropFilter: 'blur(12px)' }}
+          className="mb-4 w-[360px] max-w-[calc(100vw-2rem)] h-[500px] max-h-[calc(100vh-6rem)] glass-card rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-200"
+          style={{ border: '1px solid rgba(245,200,66,0.25)', backgroundColor: 'var(--bg-dark)' }}
         >
           {/* Panel Header */}
-          <div className="bg-[#2b1f15] text-white p-4 flex items-center justify-between border-b-2 border-[#8c5e35] relative">
+          <div className="p-4 flex items-center justify-between border-b border-[#E8D7C5] relative" style={{ backgroundColor: '#FFFFFF' }}>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img 
@@ -128,19 +127,11 @@ export default function ChatbotWidget() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                 </span>
               </div>
-              <div>
-                <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
-                  Chat with Puppetify
-                </h3>
-                <p className="text-[10px] text-[#e8d7c2] font-mono">
-                  Automation Assistant • Online
-                </p>
-              </div>
             </div>
 
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-full hover:bg-[rgba(255,255,255,0.15)] text-[#e8d7c2] hover:text-white transition-colors"
+              className="p-1.5 rounded-full hover:bg-slate-100 text-[#2B1F15] hover:text-[#C49A6C] transition-colors cursor-pointer"
               title="Close chat"
             >
               <X className="w-5 h-5" />
@@ -148,7 +139,7 @@ export default function ChatbotWidget() {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-[#FAF6EE]">
+          <div className="flex-1 p-4 overflow-y-auto space-y-3.5" style={{ backgroundColor: 'var(--bg-deep)' }}>
             {messages.map((msg) => {
               const isUser = msg.sender === 'user';
 
@@ -161,8 +152,8 @@ export default function ChatbotWidget() {
                   <div
                     className={`w-7 h-7 rounded-full shrink-0 flex items-center justify-center text-xs font-bold shadow-sm ${
                       isUser
-                        ? 'bg-[#8c5e35] text-white'
-                        : 'bg-[#2b1f15] text-[#e8d7c2] border border-[#8c5e35]'
+                        ? 'bg-[#F5C842] text-[#0D0703]'
+                        : 'bg-amber-500/10 text-[#F5C842] border border-amber-500/30'
                     }`}
                   >
                     {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -172,10 +163,10 @@ export default function ChatbotWidget() {
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed font-medium shadow-sm ${
                       isUser
-                        ? 'bg-[#1c1209] text-white rounded-tr-none'
+                        ? 'bg-gradient-to-br from-[#8A5E1A] to-[#F5C842] text-[#0D0703] font-semibold rounded-tr-none'
                         : msg.isError
-                        ? 'bg-rose-50 text-rose-800 border border-rose-200 rounded-tl-none'
-                        : 'bg-[#f0e3ce] text-[#2b1f15] border border-[#d8c3a5] rounded-tl-none'
+                        ? 'bg-rose-500/10 text-rose-300 border border-rose-500/20 rounded-tl-none'
+                        : 'glass-card text-slate-200 border border-amber-500/20 rounded-tl-none'
                     }`}
                   >
                     {msg.text}
@@ -187,13 +178,13 @@ export default function ChatbotWidget() {
             {/* Typing Indicator */}
             {isLoading && (
               <div className="flex gap-2.5 items-start">
-                <div className="w-7 h-7 rounded-full bg-[#2b1f15] text-[#e8d7c2] border border-[#8c5e35] shrink-0 flex items-center justify-center">
+                <div className="w-7 h-7 rounded-full bg-amber-500/10 text-[#F5C842] border border-amber-500/30 shrink-0 flex items-center justify-center">
                   <Bot className="w-4 h-4" />
                 </div>
-                <div className="bg-[#f0e3ce] border border-[#d8c3a5] rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5 shadow-sm">
-                  <span className="w-2 h-2 rounded-full bg-[#8c5e35] animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                  <span className="w-2 h-2 rounded-full bg-[#8c5e35] animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                  <span className="w-2 h-2 rounded-full bg-[#8c5e35] animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                <div className="glass-card border border-amber-500/20 rounded-2xl rounded-tl-none px-4 py-3 flex items-center gap-1.5 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-[#F5C842] animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                  <span className="w-2 h-2 rounded-full bg-[#F5C842] animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                  <span className="w-2 h-2 rounded-full bg-[#F5C842] animate-bounce" style={{ animationDelay: '300ms' }}></span>
                 </div>
               </div>
             )}
@@ -202,7 +193,7 @@ export default function ChatbotWidget() {
           </div>
 
           {/* Text Input Footer */}
-          <form onSubmit={handleSend} className="p-3 bg-white border-t border-[#ebdcc9] flex items-center gap-2">
+          <form onSubmit={handleSend} className="p-3 border-t border-[#E8D7C5] flex items-center gap-2" style={{ backgroundColor: '#FFFFFF' }}>
             <input
               ref={inputRef}
               type="text"
@@ -210,19 +201,20 @@ export default function ChatbotWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               disabled={isLoading}
-              className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#d8c3a5] bg-[#faf6ee] text-xs text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner"
+              className="flex-1 px-3.5 py-2.5 rounded-xl border border-[#E2D0BE] bg-[#F7EFE7] text-xs text-[#2B1F15] placeholder-[#8A7B6E] focus:outline-none focus:border-[#C49A6C] transition-all"
             />
 
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="p-2.5 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] disabled:opacity-40 disabled:hover:bg-[#1c1209] text-white transition-all shadow-md active:scale-95 shrink-0"
+              className="p-2.5 text-xs rounded-xl disabled:opacity-40 shrink-0 cursor-pointer text-white font-bold transition-all shadow-md active:scale-95"
+              style={{ background: 'linear-gradient(135deg, #C49A6C 0%, #E8D7C5 100%)', color: '#2B1F15' }}
               title="Send message"
             >
               {isLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 text-[#2B1F15]" />
               )}
             </button>
           </form>
@@ -233,26 +225,21 @@ export default function ChatbotWidget() {
       {/* ── FLOATING TRIGGER CIRCULAR BUTTON ── */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className={`group relative p-3.5 rounded-full shadow-2xl border-2 border-[#8c5e35] flex items-center justify-center transition-all duration-300 active:scale-90 ${
-          isOpen
-            ? 'bg-[#1c1209] text-white'
-            : 'bg-[#2b1f15] hover:bg-[#8c5e35] text-white hover:scale-110'
-        }`}
+        className="group relative p-3.5 rounded-full shadow-2xl border border-amber-500/40 flex items-center justify-center transition-all duration-300 active:scale-90 cursor-pointer"
+        style={{
+          background: 'linear-gradient(135deg, #1C1006 0%, #2A1A08 100%)',
+          boxShadow: '0 0 24px rgba(245,200,66,0.3)',
+        }}
         title={isOpen ? "Close Chat" : "Chat with Puppetify Assistant"}
       >
-        {/* Glow Ring effect when closed */}
-        {!isOpen && (
-          <span className="absolute -inset-1 rounded-full bg-[#8c5e35] opacity-40 blur-sm group-hover:opacity-75 transition-opacity" />
-        )}
-
         {isOpen ? (
-          <X className="w-6 h-6 relative z-10" />
+          <X className="w-6 h-6 text-[#F5C842] relative z-10" />
         ) : (
           <div className="relative z-10 flex items-center justify-center">
-            <MessageSquare className="w-6 h-6 text-[#f5e096]" />
+            <MessageSquare className="w-6 h-6 text-[#F5C842]" />
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-[#2b1f15]"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-[#0D0703]"></span>
             </span>
           </div>
         )}

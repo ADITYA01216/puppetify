@@ -47,9 +47,6 @@ export default function App() {
             onAction={scrollToWorkflows}
           />
           
-          {/* Animated Integration Logos Bar */}
-          <IntegrationsBar />
-
           <WoodenSectionDivider />
 
           {/* Live Interactive Workflow Visualizer */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { ChevronDown, Sparkles, HelpCircle, ArrowRight } from 'lucide-react';
+import { ChevronDown, HelpCircle, ArrowRight } from 'lucide-react';
 
-export default function FaqSection({ onOpenDemo }) {
+export default function FaqSection({ onAction }) {
   const [openIdx, setOpenIdx] = useState(null);
 
   const faqs = [
@@ -32,19 +32,17 @@ export default function FaqSection({ onOpenDemo }) {
   ];
 
   return (
-    <section id="faq" className="section-padding bg-[#FAF8F5]">
-      <div className="container mx-auto">
+    <section id="faq" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-dark)' }}>
+      <div className="gold-divider" />
+      <div className="max-w-7xl mx-auto px-6 pt-12">
         
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-xs font-bold text-[#B45309] uppercase tracking-wider">
-            <HelpCircle className="w-3.5 h-3.5" />
-            Frequently Asked Questions
-          </div>
-          <h2 className="font-heading text-3xl sm:text-5xl font-extrabold text-[#1C1917] tracking-tight">
-            Got Questions About <span className="text-[#D97706]">Puppet Automations</span>?
+
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+            Got Questions About <span className="gold-text">Puppet Automations</span>?
           </h2>
-          <p className="text-base sm:text-lg text-[#44403C]">
+          <p className="text-base sm:text-lg text-slate-300">
             Everything you need to know about how our puppet strings work behind the scenes to run your business.
           </p>
         </div>
@@ -56,30 +54,31 @@ export default function FaqSection({ onOpenDemo }) {
             return (
               <div 
                 key={idx}
-                className={`wooden-box transition-all duration-300 overflow-hidden ${
-                  isOpen ? 'border-[#D97706] bg-white shadow-md' : 'bg-[#FFFDF9]'
+                className={`glass-card rounded-2xl transition-all duration-300 overflow-hidden ${
+                  isOpen ? 'border-amber-400/40 bg-amber-500/10 shadow-lg shadow-amber-500/10' : ''
                 }`}
+                style={{ border: '1px solid rgba(245,200,66,0.15)' }}
               >
                 <button
                   onClick={() => setOpenIdx(isOpen ? null : idx)}
                   className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="puppet-node shrink-0 scale-90"></span>
-                    <span className="font-heading text-base sm:text-lg font-bold text-[#1C1917]">
+                    <span className="w-2 h-2 rounded-full bg-[#F5C842] shrink-0" style={{ boxShadow: '0 0 8px #F5C842' }}></span>
+                    <span className="text-base sm:text-lg font-bold text-white" style={{ fontFamily: 'var(--font-display)' }}>
                       {faq.question}
                     </span>
                   </div>
                   <div className={`p-2 rounded-full transition-transform duration-300 ${
-                    isOpen ? 'bg-[#D97706] text-white rotate-180' : 'bg-[#FEF3C7] text-[#D97706]'
+                    isOpen ? 'bg-[#F5C842] text-[#0D0703] rotate-180' : 'bg-amber-500/10 text-[#F5C842]'
                   }`}>
                     <ChevronDown className="w-5 h-5" />
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-2 border-t border-[#E6DDD0] text-sm text-[#44403C] leading-relaxed animate-in slide-in-from-top-2 duration-200">
-                    <p className="pl-7">{faq.answer}</p>
+                  <div className="px-6 pb-6 pt-2 border-t border-amber-500/15 text-sm text-slate-300 leading-relaxed">
+                    <p className="pl-5">{faq.answer}</p>
                   </div>
                 )}
               </div>
@@ -89,15 +88,15 @@ export default function FaqSection({ onOpenDemo }) {
 
         {/* Bottom Callout */}
         <div className="mt-12 text-center">
-          <p className="text-sm text-[#78716C] mb-4">
+          <p className="text-sm text-slate-400 mb-4">
             Have a custom workflow question not answered here?
           </p>
           <a 
             href="mailto:puppetifyai@gmail.com"
-            className="btn-secondary text-xs px-6 py-3 inline-flex"
+            className="btn-ghost text-xs px-6 py-3 inline-flex items-center gap-2"
           >
             <span>Ask Our Puppetify Engineers</span>
-            <ArrowRight className="w-4 h-4 text-[#D97706]" />
+            <ArrowRight className="w-4 h-4 text-[#F5C842]" />
           </a>
         </div>
 

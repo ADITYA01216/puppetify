@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Workflow, MessageSquare, Zap, CreditCard, Calendar, ShoppingBag, Database, 
-  Bot, BarChart3, Mail, Smartphone, Layers, ShieldCheck
+  Layers, ShieldCheck, Mail, Smartphone, BarChart3
 } from 'lucide-react';
 
 const INTEGRATIONS = [
@@ -24,25 +24,19 @@ const INTEGRATIONS = [
 
 export default function IntegrationsBar() {
   return (
-    <div className="w-full py-6 border-y border-[#e2d5c3] relative overflow-hidden" style={{ backgroundColor: '#FAF6EE' }}>
-      
-      {/* Label header */}
-      <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
-        <span className="text-xs font-extrabold uppercase tracking-widest text-[#8c6b43] bg-[#f0e3ce] px-3.5 py-1 rounded-full border border-[#d8c3a5] inline-flex items-center gap-1.5">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#8c5e35]" />
-          Seamless String Integrations — 100+ Apps Supported
-        </span>
-      </div>
+    <div style={{ background: 'var(--bg-dark)', borderTop: '1px solid rgba(255,255,255,0.2)', borderBottom: '1px solid rgba(255,255,255,0.2)', padding: '24px 0' }}>
 
       {/* Infinite marquee wrapper */}
-      <div className="flex overflow-hidden select-none gap-6 mask-gradient py-2">
-        <div className="flex shrink-0 animate-marquee items-center justify-around gap-6">
+      <div className="mask-fade py-2 overflow-hidden">
+        <div className="animate-marquee flex items-center gap-6 w-max">
           {INTEGRATIONS.concat(INTEGRATIONS).map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/90 border border-[#e5d8c5] shadow-sm cursor-default select-none"
+              className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl glass-card text-sm font-bold text-white cursor-default select-none"
+              style={{ border: '1px solid rgba(232, 215, 197, 0.25)', backgroundColor: 'rgba(255, 248, 240, 0.08)' }}
             >
-              <span className="text-xs sm:text-sm font-extrabold text-[#2b1f15] tracking-tight">{item.name}</span>
+              <span className="text-[#C49A6C] font-mono text-xs">•</span>
+              <span style={{ color: '#FFFFFF', fontFamily: 'var(--font-body)', fontWeight: 600 }}>{item.name}</span>
             </div>
           ))}
         </div>

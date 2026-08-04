@@ -1,134 +1,241 @@
-/* Puppetify — Design System with Fraunces Headings & Lora Body */
+/* ============================================================
+   PUPPETIFY — Dark Luxury Gold Design System
+   Inspired by: Deep espresso brown + warm amber gold aesthetic
+   ============================================================ */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Lora:ital,wght@0,400..700;1,400..700&family=DM+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=DM+Mono:wght@400;500&display=swap");
 
+/* ─── Design Tokens ─── */
 :root {
-  --ink: #2b1f15;
-  --muted: #5a4630;
-  --paper: #faf5ec;
-  --orange: #8c5e35;
-  --font-sans: "Lora", serif, system-ui, sans-serif;
-  --font-heading: "Fraunces", serif;
-  --font-serif: "Fraunces", serif;
+  /* Backgrounds */
+  --bg-deep:     #0D0703;
+  --bg-dark:     #1A0F07;
+  --bg-mid:      #24150A;
+  --bg-card:     rgba(255, 248, 240, 0.1);
+  --bg-card-h:   rgba(255, 248, 240, 0.18);
+
+  /* Beige, Light Brown & Warm Tones */
+  --beige-light: #F7EFE7;
+  --beige-mid:   #E8D7C5;
+  --light-brown: #C49A6C;
+  --warm-brown:  #A87B4C;
+  --dark-espresso: #2B1F15;
+  
+  /* Gold & Warm Accents */
+  --gold-bright: #F7CE55;
+  --gold-warm:   #D49B28;
+  --gold-glow:   rgba(247, 206, 85, 0.35);
+
+  /* High Contrast Whites & Creams */
+  --white-pure:  #FFFFFF;
+  --cream-bright:#FFF9F2;
+  --cream:       #F7EFE5;
+  --cream-dim:   #E2D0BE;
+  --cream-muted: #BFA78E;
+
+  /* Typography */
+  --font-display: 'Lora', Georgia, serif;
+  --font-body:    'Lora', Georgia, serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Easing */
+  --ease-gold:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ─── Reset ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   scroll-behavior: smooth;
-  font-family: var(--font-sans);
-  background: var(--paper);
-  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body { 
-  overflow-x: hidden; 
-  min-height: 100vh; 
-  background-color: var(--paper);
-  position: relative;
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-deep);
+  color: var(--cream);
+  overflow-x: hidden;
+  min-height: 100vh;
 }
 
-/* GPU-accelerated fixed wood background layer without layout repaints */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background-image: url('/assets/wood_bg.png');
-  background-size: cover;
-  background-position: center;
-  z-index: -50;
-  pointer-events: none;
-  transform: translateZ(0);
-  will-change: transform;
+h1, h2, h3, h4 { font-family: var(--font-display); }
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--gold-warm); border-radius: 10px; }
+
+/* ─── Keyframes ─── */
+@keyframes float-hand {
+  0%, 100% { transform: translateY(0px) rotate(-0.8deg); }
+  50%       { transform: translateY(-10px) rotate(0.8deg); }
 }
-
-h1, h2, h3, h4 {
-  font-family: var(--font-heading);
+@keyframes string-draw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
 }
-
-/* =====================================================
-   WOODEN BLOCKS
-   ===================================================== */
-
-.wooden-block {
-  width: 135px;
-  height: 135px;
-  background: 
-    linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 25%),
-    url('/assets/wood_bg.png');
-  background-size: 300px;
-  background-position: center;
-  border-radius: 20px;
-  box-shadow: 
-    inset 0 4px 6px rgba(255,255,255,0.9),
-    inset -4px -4px 6px rgba(0,0,0,0.15),
-    inset 4px 0px 6px rgba(255,255,255,0.5),
-    0 15px 25px rgba(0,0,0,0.25),
-    0 5px 10px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  color: #3b2818;
-  position: absolute;
-  transform: translateX(-50%);
-  border: 1px solid rgba(139, 90, 51, 0.3);
+@keyframes gold-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 200, 66, 0); }
+  50%       { box-shadow: 0 0 28px 8px rgba(245, 200, 66, 0.3); }
 }
-
-
-
-.block-hole {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 12px;
-  height: 12px;
-  background: #3a2212;
-  border-radius: 50%;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 1px 1px rgba(255,255,255,0.4);
-  z-index: 2;
-}
-
-
-
-.wooden-block-icon {
-  width: 40px;
-  height: 40px;
-  color: #3a2212;
-  margin-top: 12px;
-  filter: drop-shadow(0 1px 1px rgba(255,255,255,0.5));
-}
-
-.wooden-block-text {
-  font-weight: 800;
-  font-size: 13px;
-  text-align: center;
-  color: #3a2212;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-  font-family: var(--font-heading);
-}
-
-
-/* =====================================================
-   MARQUEE & WORKFLOW ANIMATIONS
-   ===================================================== */
-
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+  from { transform: translateX(0%); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes ping-gold {
+  0%       { transform: scale(1); opacity: 0.9; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+@keyframes shimmer-gold {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes card-fall {
+  from { opacity: 0; transform: translateY(-44px) rotate(-3deg); }
+  to   { opacity: 1; transform: translateY(0) rotate(0deg); }
+}
+@keyframes ambient-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.7; transform: scale(1.08); }
 }
 
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-  will-change: transform;
-  transform: translate3d(0, 0, 0);
-}
+/* ─── Utilities ─── */
+.animate-float       { animation: float-hand 7s ease-in-out infinite; }
+.animate-marquee     { animation: marquee 36s linear infinite; will-change: transform; }
+.animate-gold-pulse  { animation: gold-pulse 2.8s ease-in-out infinite; }
+.animate-ping-gold   { animation: ping-gold 2s cubic-bezier(0,0,0.2,1) infinite; }
 
-
-
-.mask-gradient {
+.mask-fade {
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* ─── Gold Text Gradient ─── */
+.gold-text {
+  background: linear-gradient(135deg, #F5C842 0%, #E8A830 40%, #C9860A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gold-text-bright {
+  background: linear-gradient(120deg, #FFF0A0 0%, #F5C842 50%, #E8A830 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glass Card ─── */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(245, 200, 66, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+}
+.glass-card:hover {
+  background: var(--bg-card-h);
+  border-color: rgba(245, 200, 66, 0.28);
+  box-shadow: 0 0 0 1px rgba(245,200,66,0.08), 0 20px 48px rgba(0,0,0,0.4), 0 0 32px rgba(245,200,66,0.08);
+}
+
+/* ─── Primary Button ─── */
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 36px;
+  background: linear-gradient(135deg, #C9860A 0%, #F5C842 60%, #C9860A 100%);
+  background-size: 200% auto;
+  color: #120A04;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: background-position 0.4s, transform 0.25s, box-shadow 0.25s;
+  box-shadow: 0 4px 20px rgba(201, 134, 10, 0.4), 0 1px 3px rgba(0,0,0,0.3);
+}
+.btn-gold::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer-gold 3.5s ease-in-out infinite;
+}
+.btn-gold:hover {
+  background-position: right center;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(245, 200, 66, 0.45), 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* ─── Ghost Button ─── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--cream-dim);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 200, 66, 0.2);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.25s var(--ease-out);
+}
+.btn-ghost:hover {
+  border-color: rgba(245, 200, 66, 0.5);
+  color: var(--gold-bright);
+  background: rgba(245, 200, 66, 0.06);
+  transform: translateY(-2px);
+}
+
+/* ─── Section Badge ─── */
+.section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  background: rgba(245, 200, 66, 0.08);
+  border: 1px solid rgba(245, 200, 66, 0.2);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold-bright);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+/* ─── Divider ─── */
+.gold-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ─── Stat Number ─── */
+.stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #F5C842 0%, #C9860A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
 }

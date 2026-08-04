@@ -76,77 +76,44 @@ export default function ContactSection({ onOpenAuth }) {
   };
 
   return (
-    <section id="contact" className="py-20 relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/assets/wood_bg.png')" }}>
-      
-      {/* Cinematic Vignette */}
-      <div 
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          background: 'radial-gradient(circle at 50% 50%, rgba(255, 245, 225, 0.45) 0%, rgba(230, 200, 160, 0.2) 60%, rgba(43, 26, 14, 0.35) 100%)'
-        }}
-      />
+    <section id="contact" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-deep)' }}>
+      <div className="gold-divider" />
 
-      <div className="max-w-4xl mx-auto px-6 relative z-10">
+      <div className="max-w-4xl mx-auto px-6 pt-12 relative z-10">
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[rgba(250,244,234,0.92)] border border-[rgba(180,140,90,0.4)] text-xs font-bold text-[#2b1a0e] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#8c5e35]" />
-            Direct Marionette Dispatch
-          </div>
-          
-          <h2 className="text-3xl sm:text-5xl font-black text-[#1a0f07] tracking-tight">
-            Connect Your <span style={{ color: '#7c4a1e' }}>Puppet Strings</span>
+          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+            Connect Your <span className="gold-text">Puppet Strings</span>
           </h2>
           
-          <p className="text-base sm:text-lg text-[#4a3520] font-medium">
+          <p className="text-base sm:text-lg text-slate-300">
             Have a custom workflow in mind? Send us a message and our automation engineers will build your custom string pipeline.
           </p>
         </div>
 
         {/* Contact Form Container */}
-        <div className="bg-[rgba(255,253,249,0.96)] backdrop-blur-md border-2 border-[#8c5e35] rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-          
-          {/* Top Decorative Brass Knot Pegs */}
-          <div className="flex items-center justify-between border-b border-[#e6ddd0] pb-6 mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
-                <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-              </div>
-              <span className="text-xs font-mono font-bold tracking-wider text-[#7c4a1e] uppercase flex items-center gap-1.5">
-                AUTOMATION INTAKE FORM
-                {isAuthed && (
-                  <span className="text-[10px] bg-[#f0e3ce] text-[#8c5e35] px-2 py-0.5 rounded-full font-bold border border-[#d8c3a5] lowercase">
-                    authenticated
-                  </span>
-                )}
-              </span>
-            </div>
-            
-            <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-[#f5e096] via-[#c89b3c] to-[#5c3a1e] border border-[#2b190c] shadow-sm relative">
-              <div className="w-1 h-1 rounded-full bg-[#2b190c] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-            </div>
-          </div>
+        <div className="glass-card rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.15)' }}>
 
           {!isAuthed ? (
             /* Unauthenticated Sign-In Prompt */
             <div className="text-center py-10 space-y-6">
-              <div className="w-16 h-16 rounded-full bg-[#f0e3ce] border-2 border-[#8c5e35] mx-auto flex items-center justify-center shadow-inner text-[#8c5e35]">
+              <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/30 mx-auto flex items-center justify-center text-[#F5C842]">
                 <Lock className="w-8 h-8" />
               </div>
 
               <div className="space-y-2 max-w-md mx-auto">
-                <h3 className="text-2xl font-black text-[#1c1209]">
+                <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-display)' }}>
                   Sign In Required
                 </h3>
-                <p className="text-sm text-[#5a4630] font-medium leading-relaxed">
+                <p className="text-sm text-slate-300 font-medium leading-relaxed">
                   Sign in to submit your automation request.
                 </p>
               </div>
 
               {errorMessage && (
-                <div className="max-w-md mx-auto p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-center justify-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                <div className="max-w-md mx-auto p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-semibold flex items-center justify-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
                   <span>{errorMessage}</span>
                 </div>
               )}
@@ -155,7 +122,7 @@ export default function ContactSection({ onOpenAuth }) {
                 <button
                   type="button"
                   onClick={onOpenAuth}
-                  className="px-8 py-3.5 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm inline-flex items-center gap-2 shadow-xl transition-all active:scale-95 cursor-pointer"
+                  className="btn-gold text-sm px-8 py-3.5 cursor-pointer"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Sign In</span>
@@ -165,21 +132,21 @@ export default function ContactSection({ onOpenAuth }) {
           ) : status === 'success' ? (
             /* Success View */
             <div className="text-center py-12 space-y-5 animate-in fade-in duration-300">
-              <div className="w-16 h-16 rounded-full bg-[#f0e3ce] text-[#8c5e35] border-2 border-[#8c5e35] mx-auto flex items-center justify-center shadow-inner">
-                <CheckCircle2 className="w-10 h-10 text-[#7c4a1e]" />
+              <div className="w-16 h-16 rounded-full bg-emerald-500/10 text-[#10B981] border border-emerald-500/30 mx-auto flex items-center justify-center">
+                <CheckCircle2 className="w-10 h-10 text-[#10B981]" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-[#1c1209]">
+              <h3 className="text-2xl sm:text-3xl font-bold text-white" style={{ fontFamily: 'var(--font-display)' }}>
                 Message Dispatched!
               </h3>
-              <p className="text-sm sm:text-base text-[#4a3520] max-w-md mx-auto font-medium">
-                Thank you, <strong className="text-[#1c1209]">{formData.name}</strong>. Your inquiry has been sent to our n8n automation pipeline. We will reply to <span className="text-[#7c4a1e] font-mono font-bold">{formData.email}</span> within 24 hours.
+              <p className="text-sm sm:text-base text-slate-300 max-w-md mx-auto font-medium">
+                Thank you, <strong className="text-white">{formData.name}</strong>. Your inquiry has been sent to our n8n automation pipeline. We will reply to <span className="text-[#F5C842] font-mono font-bold">{formData.email}</span> within 24 hours.
               </p>
               <button
                 onClick={() => {
                   setStatus('idle');
                   setFormData(prev => ({ ...prev, name: '', message: '' }));
                 }}
-                className="mt-4 px-6 py-2.5 rounded-xl bg-[#1c1209] text-white text-xs font-bold hover:bg-[#8c5e35] transition-all shadow-md cursor-pointer"
+                className="btn-gold text-xs px-6 py-2.5 cursor-pointer"
               >
                 Send Another Message
               </button>
@@ -189,8 +156,8 @@ export default function ContactSection({ onOpenAuth }) {
             <form onSubmit={handleSubmit} className="space-y-6">
               
               {errorMessage && (
-                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-start gap-2.5">
-                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-xs font-semibold flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
                   <div className="leading-relaxed">{errorMessage}</div>
                 </div>
               )}
@@ -198,8 +165,8 @@ export default function ContactSection({ onOpenAuth }) {
               {/* Full Name & Read-Only Email grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-[#8c5e35]" />
+                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-300/80 mb-2 flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-[#F5C842]" />
                     Your Name *
                   </label>
                   <input
@@ -212,17 +179,17 @@ export default function ContactSection({ onOpenAuth }) {
                       setFormData({ ...formData, name: e.target.value });
                       handleFormTouch();
                     }}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner"
+                    className="w-full px-4 py-3 rounded-xl border border-amber-500/20 bg-slate-950/60 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5C842] transition-all shadow-inner"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center justify-between">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-amber-300/80 mb-2 flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
-                      <Mail className="w-3.5 h-3.5 text-[#8c5e35]" />
+                      <Mail className="w-3.5 h-3.5 text-[#F5C842]" />
                       Email Address *
                     </span>
-                    <span className="text-[10px] text-[#8c5e35] font-extrabold flex items-center gap-1 bg-[#f0e3ce] px-2 py-0.5 rounded border border-[#d8c3a5]">
+                    <span className="text-[10px] text-[#F5C842] font-bold flex items-center gap-1 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                       <ShieldCheck className="w-3 h-3" /> Verified Account
                     </span>
                   </label>
@@ -231,15 +198,15 @@ export default function ContactSection({ onOpenAuth }) {
                     required
                     readOnly
                     value={formData.email}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#ebdcc9]/40 text-sm text-[#1c1209] font-bold cursor-not-allowed shadow-inner focus:outline-none"
+                    className="w-full px-4 py-3 rounded-xl border border-amber-500/20 bg-slate-900/40 text-sm text-amber-200 font-bold cursor-not-allowed shadow-inner focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Message */}
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#5c3a1e] mb-2 flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-[#8c5e35]" />
+                <label className="block text-xs font-bold uppercase tracking-wider text-amber-300/80 mb-2 flex items-center gap-1.5">
+                  <MessageSquare className="w-3.5 h-3.5 text-[#F5C842]" />
                   Your Automation Requirements / Message *
                 </label>
                 <textarea
@@ -252,7 +219,7 @@ export default function ContactSection({ onOpenAuth }) {
                     setFormData({ ...formData, message: e.target.value });
                     handleFormTouch();
                   }}
-                  className="w-full px-4 py-3 rounded-xl border-2 border-[#d8c3a5] bg-[#faf6ee] text-sm text-[#1c1209] font-medium placeholder-[#a08a74] focus:outline-none focus:border-[#8c5e35] focus:bg-white transition-all shadow-inner resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-amber-500/20 bg-slate-950/60 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#F5C842] transition-all shadow-inner resize-none"
                 />
               </div>
 
@@ -260,7 +227,7 @@ export default function ContactSection({ onOpenAuth }) {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="w-full py-4 rounded-xl bg-[#1c1209] hover:bg-[#8c5e35] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-75 cursor-pointer"
+                className="w-full btn-gold py-4 text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl cursor-pointer disabled:opacity-75"
               >
                 {status === 'loading' ? (
                   <>
@@ -270,7 +237,7 @@ export default function ContactSection({ onOpenAuth }) {
                 ) : (
                   <>
                     <span>Submit To Automation Engine</span>
-                    <Send className="w-4 h-4" />
+                    <Send className="w-4 h-4 text-[#0D0703]" />
                   </>
                 )}
               </button>
