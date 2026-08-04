@@ -194,7 +194,7 @@ const INDUSTRY_WORKFLOWS = [
         type: 'ACTION',
         title: 'Auto-Reply / Route',
         detail: 'Sends FAQ answer or routes urgent note to teacher',
-        icon: Bot,
+        icon: Mail,
         badgeColor: 'bg-emerald-100 text-emerald-900 border-emerald-300'
       },
       {
@@ -316,7 +316,6 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                     : 'bg-white text-[#4a3625] border-[#dfd4c3] hover:border-[#8c5e35] hover:bg-[#faf4ea]'
                 }`}
               >
-                <tab.icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#8c5e35]'}`} />
                 <span>{tab.name}</span>
               </button>
             );
@@ -335,7 +334,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                 </span>
               </div>
               <h3 className="text-2xl font-black text-[#2b1f15] mt-3 flex items-center gap-2">
-                <currentWorkflow.icon className="w-6 h-6 text-[#8c5e35]" /> {currentWorkflow.name}
+                {currentWorkflow.name}
               </h3>
               <p className="text-xs sm:text-sm text-[#5a4630] font-medium max-w-xl mt-1">
                 {currentWorkflow.description}
@@ -395,10 +394,9 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
                     {/* Node Header */}
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className={`text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border ${step.badgeColor}`}>
+                        <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full border bg-[#f0e3ce] text-[#6b4725] border-[#d8c3a5]">
                           {step.type}
                         </span>
-                        <step.icon className="w-5 h-5 text-[#8c5e35]" />
                       </div>
 
                       <h4 className="text-base font-extrabold text-[#2b1f15] mb-2">
@@ -427,28 +425,7 @@ export default function WorkflowVisualizer({ onOpenDemo }) {
             })}
           </div>
 
-          {/* Bottom Execution Bar (Updated without live infrastructure implication) */}
-          <div className="mt-10 p-5 rounded-2xl bg-[#2b1f15] text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
-            <div className="flex items-center gap-3 text-xs sm:text-sm">
-              <div className="p-2.5 rounded-xl bg-[#8c5e35] text-white shrink-0">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-white text-sm">Custom Engineering Guaranteed</div>
-                <div className="text-[#c2ab91] text-xs mt-0.5">
-                  Every workflow is custom-built for your exact tools — no code required from your team.
-                </div>
-              </div>
-            </div>
 
-            <a
-              href="mailto:puppetifyai@gmail.com"
-              className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl bg-[#8c5e35] hover:bg-[#a37042] text-white text-xs sm:text-sm font-extrabold transition-all shadow-md active:scale-95"
-            >
-              <span>Build A String Workflow For Me</span>
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
 
         </div>
 

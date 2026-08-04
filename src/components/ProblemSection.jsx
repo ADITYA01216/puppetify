@@ -126,7 +126,7 @@ export default function ProblemSection({ onOpenDemo }) {
             href="#workflows"
             className="btn-primary inline-flex"
           >
-            <span>Replace Manual Work with AI Puppets</span>
+            <span>Replace Manual Work with Automated Puppets</span>
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>

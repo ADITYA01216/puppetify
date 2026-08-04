@@ -131,7 +131,6 @@ export default function ChatbotWidget() {
               <div>
                 <h3 className="font-heading text-sm font-bold text-white flex items-center gap-1.5">
                   Chat with Puppetify
-                  <Sparkles className="w-3.5 h-3.5 text-[#c8a96e]" />
                 </h3>
                 <p className="text-[10px] text-[#e8d7c2] font-mono">
                   Automation Assistant • Online

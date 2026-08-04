@@ -4,7 +4,7 @@ import { ArrowRight, Wrench, Lock, Clock } from 'lucide-react';
 const STRING_PATHS = [
   { id: 1, startX: 29.8, startY: 33.2, endX: 29.8, endY: 47.8, label: 'SEO Engine' },
   { id: 2, startX: 50.8, startY: 29.2, endX: 50.8, endY: 47.8, label: 'Booking' },
-  { id: 3, startX: 72.8, startY: 25.2, endX: 72.8, endY: 47.8, label: 'AI Hub' },
+  { id: 3, startX: 72.8, startY: 25.2, endX: 72.8, endY: 47.8, label: 'Logic Engine' },
   { id: 4, startX: 42.2, startY: 32.2, endX: 40.5, endY: 72.2, label: 'Messaging' },
   { id: 5, startX: 63.2, startY: 27.2, endX: 61.5, endY: 72.2, label: 'Monitor' },
 ];
@@ -68,16 +68,6 @@ export default function Hero({ onAction }) {
 
         {/* ── LEFT CONTENT (HERO COPY & CTAS) ── */}
         <div className="w-full lg:w-[48%] flex flex-col justify-center py-12 lg:py-20">
-
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 self-start px-4 py-2 rounded-full mb-8 shadow-sm"
-            style={{ backgroundColor: 'rgba(250,244,234,0.92)', border: '1px solid rgba(180,140,90,0.4)' }}>
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8c5e35] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5c3a1e]"></span>
-            </span>
-            <span className="text-sm font-semibold text-[#2b1a0e]">Automate. Orchestrate. Repeat.</span>
-          </div>
 
           {/* Headline */}
           <h1 className="font-black leading-[1.05] tracking-tight mb-6" style={{ fontSize: 'clamp(2.6rem, 5vw, 4.2rem)' }}>

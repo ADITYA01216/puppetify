@@ -14,7 +14,7 @@ const INTEGRATIONS = [
   { name: 'Shopify', category: 'E-Commerce', icon: ShoppingBag },
   { name: 'Notion', category: 'Database', icon: Database },
   { name: 'HubSpot', category: 'CRM', icon: Layers },
-  { name: 'OpenAI', category: 'AI Models', icon: Bot },
+  { name: 'Google Sheets', category: 'Database', icon: Database },
   { name: 'Airtable', category: 'Base', icon: BarChart3 },
   { name: 'Calendly', category: 'Scheduling', icon: Calendar },
   { name: 'Make.com', category: 'Automation', icon: Workflow },
@@ -40,13 +40,9 @@ export default function IntegrationsBar() {
           {INTEGRATIONS.concat(INTEGRATIONS).map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-white/90 border border-[#e5d8c5] shadow-sm hover:border-[#8c5e35] transition-all hover:scale-105 cursor-pointer"
+              className="flex items-center justify-center px-5 py-2.5 rounded-xl bg-white/90 border border-[#e5d8c5] shadow-sm cursor-default select-none"
             >
-              <item.icon className="w-4 h-4 text-[#8c5e35]" />
-              <div className="flex flex-col">
-                <span className="text-xs font-extrabold text-[#2b1f15] tracking-tight">{item.name}</span>
-                <span className="text-[10px] font-semibold text-[#8c6b43]">{item.category}</span>
-              </div>
+              <span className="text-xs sm:text-sm font-extrabold text-[#2b1f15] tracking-tight">{item.name}</span>
             </div>
           ))}
         </div>
