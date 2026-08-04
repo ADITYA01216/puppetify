@@ -33,10 +33,7 @@ export default function Hero({ onAction }) {
   const heroScale = useTransform(scrollY, [0, 600], [1, 0.98]);
   const bgParallaxY = useTransform(scrollY, [0, 600], [0, 25]);
 
-  // Concept 2: Active Plucked String Tracker
-  const [pluckedStringId, setPluckedStringId] = useState(null);
-
-  // ANIMATION 4: Mouse Interaction State
+  // ANIMATION 4: Mouse Interaction State (Radius 120px, Max movement 8px, Max rotation 4°)
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const mouseXSpring = useSpring(-1000, { stiffness: 180, damping: 18 });
   const mouseYSpring = useSpring(-1000, { stiffness: 180, damping: 18 });
@@ -55,14 +52,6 @@ export default function Hero({ onAction }) {
     setMousePos({ x: -1000, y: -1000 });
     mouseXSpring.set(-1000);
     mouseYSpring.set(-1000);
-    setPluckedStringId(null);
-  };
-
-  const handleStringHover = (id) => {
-    setPluckedStringId(id);
-    setTimeout(() => {
-      setPluckedStringId(null);
-    }, 1200);
   };
 
   return (
@@ -275,14 +264,14 @@ export default function Hero({ onAction }) {
           </motion.div>
         </div>
 
-        {/* ── RIGHT CONTENT (HAND & CARD MARIONETTE CENTERPIECE WITH CONCEPTS 1, 2, 4) ── */}
+        {/* ── RIGHT CONTENT (ANIMATION 1, 2, 3, 4, 10 - Hand & Card Marionette Centerpiece) ── */}
         <div
           ref={heroContainerRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           className="w-full lg:w-[52%] flex items-center justify-center relative mt-6 lg:mt-0 select-none will-change-transform"
         >
-          {/* ANIMATION 10: Workflow Reveal (Cards drop 12px) */}
+          {/* ANIMATION 10: Workflow Reveal (Cards drop 12px, strings fade in) & ANIMATION 1: Hand Idle Motion */}
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -290,14 +279,14 @@ export default function Hero({ onAction }) {
             className="relative w-full max-w-[720px]"
             style={{ transform: 'translateZ(0)' }}
           >
-            {/* CONCEPT 1: Master Control Crossbar Balance Sway (wrist rotation + crossbar tilt) & CONCEPT 4: Finger Joint Flex Pulses */}
+            {/* ANIMATION 1: Continuous Subtle Hand Idle Motion (wrist rot -2° to +2°, vert 4-6px, 12s loop, smooth cubic bezier) */}
             <motion.div
               animate={{
-                rotate: [-1.8, 1.4, -1.0, 1.8, -1.5],
+                rotate: [-1.8, 1.6, -1.2, 1.8, -1.5],
                 y: [0, -5, 1, -6, 2, 0],
               }}
               transition={{
-                duration: 13,
+                duration: 12,
                 repeat: Infinity,
                 repeatType: 'mirror',
                 ease: [0.45, 0, 0.55, 1],
@@ -312,9 +301,9 @@ export default function Hero({ onAction }) {
                 style={{ transform: 'translateZ(0)' }}
               />
 
-              {/* SVG OVERLAY: CONCEPT 2 (Interactive String Pluck & Dynamic Wave Ripples) */}
+              {/* SVG OVERLAY: ANIMATION 2 (Natural String Physics) & ANIMATION 3 (Card Pendulum Swings) */}
               <svg
-                className="absolute inset-0 w-full h-full z-20 pointer-events-auto"
+                className="absolute inset-0 w-full h-full pointer-events-none z-10"
                 viewBox="0 0 100 100"
                 preserveAspectRatio="none"
               >
@@ -325,76 +314,27 @@ export default function Hero({ onAction }) {
                     <stop offset="60%" stopColor="#c89b3c" />
                     <stop offset="100%" stopColor="#5c3a1e" />
                   </radialGradient>
-
-                  {/* Soft String Glow on Pluck */}
-                  <filter id="stringGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="0.4" result="blur" />
-                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                  </filter>
                 </defs>
 
-                {STRING_CONFIG.map((sp) => {
-                  const isPlucked = pluckedStringId === sp.id;
-                  const midX = sp.startX + (sp.endX - sp.startX) * 0.5;
-                  const midY = sp.startY + (sp.endY - sp.startY) * 0.5;
-
-                  // Curved path when plucked or straight line when idle
-                  const pathD = isPlucked
-                    ? `M ${sp.startX} ${sp.startY} Q ${midX + 2.5} ${midY} ${sp.endX} ${sp.endY}`
-                    : `M ${sp.startX} ${sp.startY} L ${sp.endX} ${sp.endY}`;
-
-                  return (
-                    <g key={sp.id} className="cursor-pointer">
-                      {/* Invisible wider hover hit target for string pluck (Concept 2) */}
-                      <path
-                        d={`M ${sp.startX} ${sp.startY} L ${sp.endX} ${sp.endY}`}
-                        stroke="transparent"
-                        strokeWidth="3.5"
-                        onMouseEnter={() => handleStringHover(sp.id)}
-                      />
-
-                      {/* Interactive String Line (Dynamic curve on pluck) */}
-                      <motion.path
-                        d={pathD}
-                        stroke={isPlucked ? '#c89b3c' : 'rgba(140,94,53,0.35)'}
-                        strokeWidth={isPlucked ? '0.6' : '0.35'}
-                        strokeDasharray={isPlucked ? 'none' : '1.5,1.5'}
-                        fill="none"
-                        filter={isPlucked ? 'url(#stringGlow)' : undefined}
-                        animate={
-                          isPlucked
-                            ? {
-                                d: [
-                                  `M ${sp.startX} ${sp.startY} Q ${midX + 2.8} ${midY} ${sp.endX} ${sp.endY}`,
-                                  `M ${sp.startX} ${sp.startY} Q ${midX - 1.8} ${midY} ${sp.endX} ${sp.endY}`,
-                                  `M ${sp.startX} ${sp.startY} Q ${midX + 0.8} ${midY} ${sp.endX} ${sp.endY}`,
-                                  `M ${sp.startX} ${sp.startY} L ${sp.endX} ${sp.endY}`,
-                                ],
-                              }
-                            : {}
-                        }
-                        transition={{ duration: 0.8, ease: 'easeOut' }}
-                      />
-
-                      {/* CONNECTOR PORTS precisely aligned inside Card Rope Holes */}
-                      <circle
-                        cx={`${sp.endX}%`}
-                        cy={`${sp.endY}%`}
-                        r={isPlucked ? '1.4' : '1.1'}
-                        fill="url(#brassPort)"
-                        stroke="#2b190c"
-                        strokeWidth="0.3"
-                        className="transition-all duration-300"
-                      />
-                      <circle
-                        cx={`${sp.endX}%`}
-                        cy={`${sp.endY}%`}
-                        r="0.4"
-                        fill="#2b190c"
-                      />
-                    </g>
-                  );
-                })}
+                {STRING_CONFIG.map((sp) => (
+                  <g key={sp.id}>
+                    {/* CONNECTOR PORTS precisely aligned inside Card Rope Holes */}
+                    <circle
+                      cx={`${sp.endX}%`}
+                      cy={`${sp.endY}%`}
+                      r="1.1"
+                      fill="url(#brassPort)"
+                      stroke="#2b190c"
+                      strokeWidth="0.3"
+                    />
+                    <circle
+                      cx={`${sp.endX}%`}
+                      cy={`${sp.endY}%`}
+                      r="0.4"
+                      fill="#2b190c"
+                    />
+                  </g>
+                ))}
               </svg>
             </motion.div>
           </motion.div>
