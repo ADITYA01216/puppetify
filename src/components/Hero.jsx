@@ -301,7 +301,7 @@ export default function Hero({ onAction }) {
                 style={{ transform: 'translateZ(0)' }}
               />
 
-              {/* SVG OVERLAY: ANIMATION 2 (Natural String Physics) & ANIMATION 3 (Card Pendulum Swings) */}
+              {/* SVG OVERLAY: CONCEPT 5 - SYNCHRONIZED PUPPET BREATHING WAVE & BRASS EYELETS */}
               <svg
                 className="absolute inset-0 w-full h-full pointer-events-none z-10"
                 viewBox="0 0 100 100"
@@ -314,18 +314,54 @@ export default function Hero({ onAction }) {
                     <stop offset="60%" stopColor="#c89b3c" />
                     <stop offset="100%" stopColor="#5c3a1e" />
                   </radialGradient>
+
+                  {/* Soft String Energy Wave Gradient */}
+                  <linearGradient id="stringPulseGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#f5e096" stopOpacity="0.8" />
+                    <stop offset="50%" stopColor="#c89b3c" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#5c3a1e" stopOpacity="0.1" />
+                  </linearGradient>
                 </defs>
 
-                {STRING_CONFIG.map((sp) => (
+                {STRING_CONFIG.map((sp, idx) => (
                   <g key={sp.id}>
-                    {/* CONNECTOR PORTS precisely aligned inside Card Rope Holes */}
-                    <circle
+                    {/* CONCEPT 5: Fluid String Wave Pulse Line */}
+                    <line
+                      x1={`${sp.startX}%`}
+                      y1={`${sp.startY}%`}
+                      x2={`${sp.endX}%`}
+                      y2={`${sp.endY}%`}
+                      stroke="url(#stringPulseGlow)"
+                      strokeWidth="0.3"
+                      strokeDasharray="2, 6"
+                    >
+                      <animate
+                        attributeName="stroke-dashoffset"
+                        from="16"
+                        to="0"
+                        dur={`${sp.duration * 0.5}s`}
+                        begin={`${sp.delay}s`}
+                        repeatCount="indefinite"
+                      />
+                    </line>
+
+                    {/* CONNECTOR PORTS precisely aligned inside Card Rope Holes with Synchronized Breath */}
+                    <motion.circle
                       cx={`${sp.endX}%`}
                       cy={`${sp.endY}%`}
                       r="1.1"
                       fill="url(#brassPort)"
                       stroke="#2b190c"
                       strokeWidth="0.3"
+                      animate={{
+                        scale: [1, 1.08, 1],
+                      }}
+                      transition={{
+                        duration: 4.2,
+                        delay: idx * 0.3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
                     />
                     <circle
                       cx={`${sp.endX}%`}
