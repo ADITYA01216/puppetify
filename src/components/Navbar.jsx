@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LogIn, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenAuth }) {
   const { authed, userEmail } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 transition-all" style={{ backgroundColor: 'rgba(250,244,234,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(160,120,70,0.2)' }}>
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'shadow-md border-b border-[rgba(160,120,70,0.35)]' : 'border-b border-[rgba(160,120,70,0.2)]'
+      }`}
+      style={{
+        backgroundColor: isScrolled ? 'rgba(250,244,234,0.98)' : 'rgba(250,244,234,0.95)',
+        backdropFilter: isScrolled ? 'blur(18px)' : 'blur(12px)'
+      }}
+    >
+      <div className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${
+        isScrolled ? 'h-[74px]' : 'h-20'
+      }`}>
 
         {/* Official Brand Logo */}
         <a href="#" className="flex items-center gap-2 group py-1">
