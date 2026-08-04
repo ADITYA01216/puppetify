@@ -77,7 +77,7 @@ export default function FaqSection({ onAction }) {
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-2 border-t border-amber-500/15 text-sm text-slate-300 leading-relaxed">
+                  <div className="px-6 pb-6 pt-3 border-t border-amber-500/15 text-base sm:text-lg text-[#F7EFE7] leading-relaxed">
                     <p className="pl-5">{faq.answer}</p>
                   </div>
                 )}
