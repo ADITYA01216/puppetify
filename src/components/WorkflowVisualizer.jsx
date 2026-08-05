@@ -225,7 +225,7 @@ export default function WorkflowVisualizer({ onAction }) {
   }));
 
   return (
-    <section id="workflows" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-deep)' }}>
+    <section id="workflows" className="py-24 relative overflow-hidden scroll-mt-24" style={{ backgroundColor: 'var(--bg-deep)' }}>
       
       {/* Divider */}
       <div className="gold-divider" />

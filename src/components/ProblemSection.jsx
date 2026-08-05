@@ -3,16 +3,16 @@ import { Clock, CheckCircle2, XCircle, ArrowRight, Zap, Globe, Lock } from 'luci
 
 export default function ProblemSection({ onAction }) {
   return (
-    <section id="problem" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-deep)' }}>
+    <section id="problem" className="py-24 relative overflow-hidden scroll-mt-24" style={{ backgroundColor: 'var(--bg-deep)' }}>
       <div className="gold-divider" />
-      <div className="max-w-7xl mx-auto px-6 pt-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
         
         {/* Header */}
-        <div className="max-w-3xl mx-auto text-center space-y-4 mb-14">
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+        <div className="max-w-3xl mx-auto text-center space-y-4 mb-10 sm:mb-14">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
             Stop Pulling Every String <span className="gold-text">By Hand</span>.
           </h2>
-          <p className="text-base md:text-lg text-[#F7EFE7]">
+          <p className="text-sm sm:text-base md:text-lg text-[#F7EFE7]">
             As a business owner, you spend up to <strong className="text-[#F7CE55] font-bold">18 hours every single week</strong> manually managing reservations, answering WhatsApp messages, asking for Google reviews, and chasing inventory alerts.
           </p>
         </div>
@@ -22,31 +22,31 @@ export default function ProblemSection({ onAction }) {
           
           {/* MacBook Outer Display Bezel */}
           <div 
-            className="relative rounded-t-[24px] sm:rounded-t-[32px] bg-[#0E0E10] border-[6px] sm:border-[10px] border-[#1C1D21] p-1.5 sm:p-3"
+            className="relative rounded-t-[20px] sm:rounded-t-[32px] bg-[#0E0E10] border-[4px] sm:border-[10px] border-[#1C1D21] p-1 sm:p-3"
             style={{
               boxShadow: '0 30px 70px -12px rgba(0, 0, 0, 0.9), inset 0 0 0 1px rgba(255, 255, 255, 0.08)',
             }}
           >
             {/* Top Camera Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 sm:w-36 h-3.5 sm:h-4.5 bg-[#1C1D21] rounded-b-xl flex items-center justify-center gap-2 z-30">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 sm:w-36 h-3 sm:h-4.5 bg-[#1C1D21] rounded-b-xl flex items-center justify-center gap-2 z-30">
               <div className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#090A0C] border border-[#2A2B30]" />
               <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-[#152438]" />
             </div>
 
             {/* macOS Browser Header Bar */}
-            <div className="bg-[#181512] rounded-t-xl px-4 py-2.5 border-b border-white/10 flex items-center justify-between text-xs text-white/70 select-none z-20">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]" />
-                <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
-                <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+            <div className="bg-[#181512] rounded-t-xl px-2.5 sm:px-4 py-2 border-b border-white/10 flex items-center justify-between text-xs text-white/70 select-none z-20">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]" />
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+                <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
               </div>
 
               {/* URL Address Bar */}
-              <div className="flex items-center gap-2 bg-[#2B231D] px-4 py-1 rounded-md text-[11px] text-white/80 font-mono border border-white/10">
-                <Lock className="w-3 h-3 text-[#C49A6C]" />
-                <span className="text-[#C49A6C]">https://</span>
-                <span>puppetify.ai</span>
-                <span className="text-white/40">/autopilot-comparison</span>
+              <div className="flex items-center gap-1.5 sm:gap-2 bg-[#2B231D] px-2.5 sm:px-4 py-1 rounded-md text-[10px] sm:text-[11px] text-white/80 font-mono border border-white/10 max-w-[210px] sm:max-w-none overflow-hidden text-ellipsis whitespace-nowrap">
+                <Lock className="w-3 h-3 text-[#C49A6C] shrink-0" />
+                <span className="text-[#C49A6C] shrink-0">https://</span>
+                <span className="font-bold text-white shrink-0">puppetify.com</span>
+                <span className="text-white/40 truncate hidden xs:inline">/autopilot-comparison</span>
               </div>
 
               <div className="hidden sm:flex items-center gap-3 text-[10px] font-mono text-white/50">
@@ -55,7 +55,7 @@ export default function ProblemSection({ onAction }) {
             </div>
 
             {/* Laptop Display Content Viewport */}
-            <div className="bg-[#120A04] p-5 sm:p-8 rounded-b-xl border-t border-white/5 relative">
+            <div className="bg-[#120A04] p-3.5 sm:p-8 rounded-b-xl border-t border-white/5 relative">
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
                 

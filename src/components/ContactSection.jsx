@@ -76,7 +76,7 @@ export default function ContactSection({ onOpenAuth }) {
   };
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-deep)' }}>
+    <section id="contact" className="py-24 relative overflow-hidden scroll-mt-24" style={{ backgroundColor: 'var(--bg-deep)' }}>
       <div className="gold-divider" />
 
       <div className="max-w-4xl mx-auto px-6 pt-12 relative z-10">

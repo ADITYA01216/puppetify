@@ -32,7 +32,7 @@ export default function FaqSection({ onAction }) {
   ];
 
   return (
-    <section id="faq" className="py-24 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-dark)' }}>
+    <section id="faq" className="py-24 relative overflow-hidden scroll-mt-24" style={{ backgroundColor: 'var(--bg-dark)' }}>
       <div className="gold-divider" />
       <div className="max-w-7xl mx-auto px-6 pt-12">
         
