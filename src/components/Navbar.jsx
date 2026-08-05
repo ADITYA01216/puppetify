@@ -38,10 +38,11 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        background: 'rgba(255, 255, 255, 0.96)',
+        background: isScrolled ? 'rgba(13, 7, 3, 0.94)' : 'rgba(13, 7, 3, 0.85)',
         backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(216, 195, 165, 0.5)',
-        boxShadow: isScrolled ? '0 4px 24px rgba(0,0,0,0.12)' : '0 2px 10px rgba(0,0,0,0.06)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid rgba(245, 200, 66, 0.18)',
+        boxShadow: isScrolled ? '0 8px 32px rgba(0,0,0,0.5)' : '0 2px 10px rgba(0,0,0,0.2)',
         transition: 'all 0.3s ease-in-out',
       }}
     >
@@ -55,7 +56,7 @@ export default function Navbar() {
           <img 
             src="/assets/puppet_logo.png" 
             alt="Puppetify Logo" 
-            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-9 sm:h-11 w-auto object-contain transition-transform group-hover:scale-105"
           />
         </Link>
 
@@ -68,13 +69,13 @@ export default function Navbar() {
               style={{
                 fontSize: '0.92rem',
                 fontWeight: 600,
-                color: '#2B1F15',
+                color: '#F7EFE7',
                 textDecoration: 'none',
                 transition: 'color 0.2s',
                 fontFamily: 'var(--font-body)',
               }}
-              onMouseEnter={(e) => (e.target.style.color = '#C49A6C')}
-              onMouseLeave={(e) => (e.target.style.color = '#2B1F15')}
+              onMouseEnter={(e) => (e.target.style.color = '#F5C842')}
+              onMouseLeave={(e) => (e.target.style.color = '#F7EFE7')}
             >
               {item.name}
             </a>
@@ -85,14 +86,14 @@ export default function Navbar() {
         <div className="hidden sm:flex items-center gap-3">
           {authed ? (
             <>
-              <div className="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm border border-[#2B1F15] bg-[#2B1F15]/5 text-[#2B1F15] flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#C49A6C]" />
+              <div className="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm border border-amber-500/30 bg-amber-500/10 text-amber-200 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#F5C842]" />
                 <span className="max-w-[140px] truncate">{fullName || userEmail || 'Account'}</span>
               </div>
 
               <button
                 onClick={handleSignOut}
-                className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm border border-red-800/30 bg-red-500/10 text-red-800 hover:bg-red-600 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm border border-red-500/30 bg-red-500/10 text-red-300 hover:bg-red-500 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
                 title="Sign Out"
               >
                 <LogOut className="w-4 h-4" />
@@ -103,9 +104,9 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-[#2B1F15] text-[#2B1F15] hover:bg-[#2B1F15] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+                className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-amber-500/30 text-white hover:border-[#F5C842] hover:text-[#F5C842] transition-all flex items-center gap-2 cursor-pointer"
               >
-                <LogIn className="w-4 h-4 text-[#C49A6C]" />
+                <LogIn className="w-4 h-4 text-[#F5C842]" />
                 <span>Login</span>
               </Link>
 
@@ -113,8 +114,8 @@ export default function Navbar() {
                 to="/signup"
                 className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0D0703] transition-all shadow-md active:scale-95 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C49A6C 0%, #E8D7C5 50%, #C49A6C 100%)',
-                  boxShadow: '0 4px 14px rgba(196, 154, 108, 0.35)',
+                  background: 'linear-gradient(135deg, #F5C842 0%, #E8A830 50%, #C9860A 100%)',
+                  boxShadow: '0 4px 14px rgba(245, 200, 66, 0.35)',
                 }}
               >
                 Get Started
@@ -126,10 +127,10 @@ export default function Navbar() {
         {/* Mobile Hamburger Toggle Button */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden p-2.5 rounded-xl text-[#2B1F15] hover:bg-slate-100 transition-colors cursor-pointer"
+          className="lg:hidden p-2 rounded-xl text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
           aria-label="Toggle Navigation Menu"
         >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMobileMenuOpen ? <X className="w-6 h-6 text-[#F5C842]" /> : <Menu className="w-6 h-6 text-white" />}
         </button>
       </div>
 
