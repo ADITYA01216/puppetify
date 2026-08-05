@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import IntegrationsBar from './components/IntegrationsBar';
 import WorkflowVisualizer from './components/WorkflowVisualizer';
 import ProblemSection from './components/ProblemSection';
 import FaqSection from './components/FaqSection';
@@ -9,86 +9,87 @@ import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
 import ChatbotWidget from './components/ChatbotWidget';
-import AuthModal from './components/AuthModal';
+
 import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
-export default function App() {
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
+import DashboardLayout from './components/DashboardLayout';
+import DashboardPage from './pages/DashboardPage';
+import PuppetsPage from './pages/PuppetsPage';
+import WorkflowBuilderPage from './pages/WorkflowBuilderPage';
+import BillingPage from './pages/BillingPage';
+import SettingsPage from './pages/SettingsPage';
+import ApiKeysPage from './pages/ApiKeysPage';
+import AccountPage from './pages/AccountPage';
+
+function LandingPage() {
   const scrollToWorkflows = () => {
     const el = document.getElementById('workflows');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    const handleUnauthorized = () => {
-      setIsAuthModalOpen(true);
-    };
-    window.addEventListener('auth:unauthorized', handleUnauthorized);
-    return () => {
-      window.removeEventListener('auth:unauthorized', handleUnauthorized);
-    };
-  }, []);
-
   return (
-    <AuthProvider>
-      <div className="min-h-screen text-[#1C1917] antialiased">
-        
-        {/* Navbar */}
-        <Navbar 
-          onAction={scrollToWorkflows}
-          onOpenAuth={() => setIsAuthModalOpen(true)}
-        />
+    <div className="min-h-screen text-[#1C1917] antialiased">
+      <Navbar />
 
-        {/* Main Single-Page Content */}
-        <main className="pt-20">
-          {/* Hero Section */}
-          <Hero 
-            onAction={scrollToWorkflows}
-          />
-          
-          <WoodenSectionDivider />
+      <main className="pt-20">
+        <Hero onAction={scrollToWorkflows} />
+        <WoodenSectionDivider />
+        <WorkflowVisualizer onAction={scrollToWorkflows} />
+        <WoodenSectionDivider />
+        <ProblemSection onAction={scrollToWorkflows} />
+        <WoodenSectionDivider />
+        <FaqSection onAction={scrollToWorkflows} />
+        <WoodenSectionDivider />
+        <ContactSection />
+      </main>
 
-          {/* Live Interactive Workflow Visualizer */}
-          <WorkflowVisualizer 
-            onAction={scrollToWorkflows}
-          />
+      <Footer onAction={scrollToWorkflows} />
+      <ChatbotWidget />
+    </div>
+  );
+}
 
-          <WoodenSectionDivider />
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public Landing Page */}
+          <Route path="/" element={<LandingPage />} />
 
-          {/* The Small Business Reality: Manual vs Autopilot */}
-          <ProblemSection 
-            onAction={scrollToWorkflows}
-          />
+          {/* Authentication Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          <WoodenSectionDivider />
+          {/* Protected Dashboard App Routes */}
+          <Route
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/puppets" element={<PuppetsPage />} />
+            <Route path="/workflows" element={<WorkflowBuilderPage />} />
+            <Route path="/billing" element={<BillingPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/api-keys" element={<ApiKeysPage />} />
+            <Route path="/account" element={<AccountPage />} />
+          </Route>
 
-          {/* Frequently Asked Questions */}
-          <FaqSection 
-            onAction={scrollToWorkflows}
-          />
-
-          <WoodenSectionDivider />
-
-          {/* n8n Webhook Contact Form Section */}
-          <ContactSection onOpenAuth={() => setIsAuthModalOpen(true)} />
-        </main>
-
-        {/* Footer */}
-        <Footer 
-          onAction={scrollToWorkflows}
-        />
-
-        {/* Floating Chatbot Widget (n8n integration) */}
-        <ChatbotWidget />
-
-        {/* Passkey OTP Auth Modal */}
-        <AuthModal
-          isOpen={isAuthModalOpen}
-          onClose={() => setIsAuthModalOpen(false)}
-        />
-
-      </div>
-    </AuthProvider>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

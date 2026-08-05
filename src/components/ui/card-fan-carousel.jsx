@@ -37,17 +37,29 @@ function getHeightMultiplier(width) {
   return available / idealPx;
 }
 
-function getSlotConfig(totalCards, slot) {
-  if (totalCards >= MAX_VISIBLE) return FAN_POSITIONS[slot];
+function getSlotConfig(totalCards, slot, width = 1024) {
+  const isMobile = width < 640;
+  if (totalCards >= MAX_VISIBLE) {
+    const base = FAN_POSITIONS[slot];
+    if (isMobile) {
+      return {
+        ...base,
+        rot: base.rot * 0.2,
+        opacity: slot === 3 ? 1 : 0.15,
+      };
+    }
+    return { ...base, opacity: 1 };
+  }
   const center = totalCards >> 1;
   const distance = totalCards > 1 ? (slot - center) / center : 0;
   const absDistance = Math.abs(distance);
   return {
-    rot: distance * 21,
+    rot: isMobile ? 0 : distance * 21,
     scale: 1.0 - 0.2244 * absDistance * absDistance,
     x: distance * 30,
     y: absDistance * absDistance * 7.3,
     zIndex: 10 - Math.abs(slot - center),
+    opacity: isMobile && slot !== center ? 0.15 : 1,
   };
 }
 
@@ -106,10 +118,11 @@ export default function SocialCards({ cards, onSelectCard, selectedIndex: extern
     const previouslyVisible = prevVisible.current;
     const direction = directionRef.current;
     const isFirstMount = !hasEntered.current;
-    const multiplier = getResponsiveMultiplier(window.innerWidth);
-    const hMult = getHeightMultiplier(window.innerWidth);
+    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1024;
+    const multiplier = getResponsiveMultiplier(windowWidth);
+    const hMult = getHeightMultiplier(windowWidth);
     const slotCount = needsPagination ? MAX_VISIBLE : totalCards;
-    const config = (slot) => getSlotConfig(slotCount, slot);
+    const config = (slot) => getSlotConfig(slotCount, slot, windowWidth);
 
     if (isFirstMount) isAnimating.current = true;
 
@@ -127,13 +140,13 @@ export default function SocialCards({ cards, onSelectCard, selectedIndex: extern
       const wasVisible = previouslyVisible.has(cardIndex);
 
       if (slot !== undefined) {
-        const { x, y, rot, scale, zIndex } = config(slot);
+        const { x, y, rot, scale, zIndex, opacity } = config(slot);
         const target = {
           x: `${x * multiplier}rem`,
           y: `${y * hMult}rem`,
           rotation: rot,
           scale,
-          opacity: 1,
+          opacity,
           zIndex,
         };
 
@@ -243,6 +256,29 @@ export default function SocialCards({ cards, onSelectCard, selectedIndex: extern
     };
   }, [centerIndex, totalCards, getVisibleMap, needsPagination]);
 
+  const touchStartX = useRef(null);
+
+  const handleTouchStart = (e) => {
+    if (e.touches && e.touches.length > 0) {
+      touchStartX.current = e.touches[0].clientX;
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    if (e.changedTouches && e.changedTouches.length > 0) {
+      const diffX = e.changedTouches[0].clientX - touchStartX.current;
+      if (Math.abs(diffX) > 40) {
+        if (diffX < 0) {
+          cycle("right");
+        } else {
+          cycle("left");
+        }
+      }
+    }
+    touchStartX.current = null;
+  };
+
   if (!totalCards) return null;
 
   const chevron = (direction) => (
@@ -252,7 +288,11 @@ export default function SocialCards({ cards, onSelectCard, selectedIndex: extern
   );
 
   return (
-    <section className="flex flex-col items-center w-full py-4 lg:py-8 px-2 md:px-4 relative z-20 overflow-visible">
+    <section 
+      className="flex flex-col items-center w-full py-4 lg:py-8 px-2 md:px-4 relative z-20 overflow-visible touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex items-center justify-center w-full max-w-[90rem]">
         <div ref={containerRef} className="fan-layout flex relative justify-center items-center w-full min-h-[460px] sm:min-h-[520px]">
           {cards.map((card, index) => {
@@ -276,8 +316,8 @@ export default function SocialCards({ cards, onSelectCard, selectedIndex: extern
                 }}
                 className="fan-card absolute cursor-pointer select-none transition-shadow"
                 style={{
-                  width: 'clamp(260px, 22vw, 320px)',
-                  height: 'clamp(380px, 32vw, 460px)',
+                  width: 'clamp(270px, 82vw, 320px)',
+                  height: 'clamp(400px, 75vw, 460px)',
                 }}
               >
                 {contentNode}

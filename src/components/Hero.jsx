@@ -15,8 +15,10 @@ function HeroCanvasAnimation() {
     if (!ctx) return;
 
     let animationFrameId;
-    let currentFrame = 0;
-    const totalFrames = 239;
+    let currentFrameIndex = 0;
+    const totalRawFrames = 239;
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+    const step = isMobile ? 3 : 1; // Step 3 frames on mobile (preload ~80 frames instead of 239)
     const frames = [];
     let isMounted = true;
 
@@ -26,38 +28,50 @@ function HeroCanvasAnimation() {
       canvas.height = window.innerHeight;
     };
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas, { passive: true });
 
-    // Preload image frame sequence
-    for (let i = 1; i <= totalFrames; i++) {
+    // Preload image frame sequence adaptively
+    for (let i = 1; i <= totalRawFrames; i += step) {
       const img = new Image();
       const numStr = String(i).padStart(3, '0');
       img.src = `/assets/hero_frames/frame_${numStr}.jpg`;
       frames.push(img);
     }
 
+    // Use IntersectionObserver to pause rendering when Hero is offscreen
+    let isVisible = true;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(canvas);
+
     let lastTime = performance.now();
-    const fps = 24;
+    const fps = isMobile ? 18 : 24;
     const interval = 1000 / fps;
 
     const render = (now) => {
       if (!isMounted) return;
 
-      const elapsed = now - lastTime;
-      if (elapsed > interval) {
-        lastTime = now - (elapsed % interval);
-        currentFrame = (currentFrame + 1) % totalFrames;
+      if (isVisible) {
+        const elapsed = now - lastTime;
+        if (elapsed > interval) {
+          lastTime = now - (elapsed % interval);
+          currentFrameIndex = (currentFrameIndex + 1) % frames.length;
 
-        const img = frames[currentFrame];
-        if (img && img.complete && img.naturalWidth > 0) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          
-          // Calculate cover aspect fill
-          const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-          const x = (canvas.width / 2) - (img.width / 2) * scale;
-          const y = (canvas.height / 2) - (img.height / 2) * scale;
-          
-          ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+          const img = frames[currentFrameIndex];
+          if (img && img.complete && img.naturalWidth > 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate cover aspect fill
+            const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
+            const x = (canvas.width / 2) - (img.width / 2) * scale;
+            const y = (canvas.height / 2) - (img.height / 2) * scale;
+            
+            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+          }
         }
       }
 
@@ -69,6 +83,7 @@ function HeroCanvasAnimation() {
     return () => {
       isMounted = false;
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
       window.removeEventListener('resize', resizeCanvas);
     };
   }, []);

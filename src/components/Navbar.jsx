@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { LogIn, ShieldCheck } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LogIn, ShieldCheck, LayoutDashboard, LogOut, Menu, X, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function Navbar({ onOpenAuth }) {
-  const { authed, userEmail } = useAuth();
+export default function Navbar() {
+  const { authed, fullName, signOut } = useAuth();
+  const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -13,6 +16,19 @@ export default function Navbar({ onOpenAuth }) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMobileMenuOpen(false);
+    navigate('/', { replace: true });
+  };
+
+  const navLinks = [
+    { name: 'Workflows', href: '/#workflows' },
+    { name: 'Why Puppetify', href: '/#problem' },
+    { name: 'FAQ', href: '/#faq' },
+    { name: 'Contact', href: '/#contact' },
+  ];
 
   return (
     <nav
@@ -30,79 +46,151 @@ export default function Navbar({ onOpenAuth }) {
       }}
     >
       <div
-        className={`max-w-7xl mx-auto px-6 flex items-center justify-between transition-all duration-300 ${
+        className={`max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between transition-all duration-300 ${
           isScrolled ? 'h-[72px]' : 'h-20'
         }`}
       >
-        {/* Official Brand Logo on White Bar */}
-        <a href="#" className="flex items-center gap-3 group py-1">
+        {/* Official Brand Logo */}
+        <Link to="/" className="flex items-center gap-3 group py-1">
           <img 
             src="/assets/puppet_logo.png" 
             alt="Puppetify Logo" 
-            className="h-12 sm:h-14 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-10 sm:h-12 w-auto object-contain transition-transform group-hover:scale-105"
           />
-        </a>
+        </Link>
 
-        {/* High Contrast Nav Links */}
+        {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-8">
-          {[
-            { name: 'Workflows', href: '#workflows' },
-            { name: 'Why Puppetify', href: '#problem' },
-            { name: 'FAQ', href: '#faq' },
-            { name: 'Contact', href: '#contact' },
-          ].map((item) => {
-            return (
+          {navLinks.map((item) => (
+            <a
+              key={item.name}
+              href={item.href}
+              style={{
+                fontSize: '0.92rem',
+                fontWeight: 600,
+                color: '#2B1F15',
+                textDecoration: 'none',
+                transition: 'color 0.2s',
+                fontFamily: 'var(--font-body)',
+              }}
+              onMouseEnter={(e) => (e.target.style.color = '#C49A6C')}
+              onMouseLeave={(e) => (e.target.style.color = '#2B1F15')}
+            >
+              {item.name}
+            </a>
+          ))}
+        </div>
+
+        {/* Right Action Buttons */}
+        <div className="hidden sm:flex items-center gap-3">
+          {authed ? (
+            <>
+              <div className="px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm border border-[#2B1F15] bg-[#2B1F15]/5 text-[#2B1F15] flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#C49A6C]" />
+                <span className="max-w-[140px] truncate">{fullName || userEmail || 'Account'}</span>
+              </div>
+
+              <button
+                onClick={handleSignOut}
+                className="px-4 py-2 rounded-xl font-bold text-xs sm:text-sm border border-red-800/30 bg-red-500/10 text-red-800 hover:bg-red-600 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign Out</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-[#2B1F15] text-[#2B1F15] hover:bg-[#2B1F15] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+              >
+                <LogIn className="w-4 h-4 text-[#C49A6C]" />
+                <span>Login</span>
+              </Link>
+
+              <Link
+                to="/signup"
+                className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0D0703] transition-all shadow-md active:scale-95 cursor-pointer"
+                style={{
+                  background: 'linear-gradient(135deg, #C49A6C 0%, #E8D7C5 50%, #C49A6C 100%)',
+                  boxShadow: '0 4px 14px rgba(196, 154, 108, 0.35)',
+                }}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Hamburger Toggle Button */}
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="lg:hidden p-2.5 rounded-xl text-[#2B1F15] hover:bg-slate-100 transition-colors cursor-pointer"
+          aria-label="Toggle Navigation Menu"
+        >
+          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Mobile Slide-Over Drawer */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden fixed inset-0 top-[72px] z-50 bg-[#1A0F07]/98 backdrop-blur-2xl p-6 flex flex-col justify-between animate-fadeIn text-white">
+          <div className="space-y-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-amber-500/20 pb-2">
+              Navigation
+            </div>
+            
+            {navLinks.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                style={{
-                  fontSize: '0.92rem',
-                  fontWeight: 600,
-                  color: '#2B1F15',
-                  textDecoration: 'none',
-                  transition: 'color 0.2s',
-                  fontFamily: 'var(--font-body)',
-                }}
-                onMouseEnter={(e) => (e.target.style.color = '#C49A6C')}
-                onMouseLeave={(e) => (e.target.style.color = '#2B1F15')}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block text-lg font-bold text-slate-200 hover:text-[#F5C842] transition-colors"
               >
                 {item.name}
               </a>
-            );
-          })}
-        </div>
+            ))}
+          </div>
 
-        {/* Right Buttons */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onOpenAuth}
-            className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-[#2B1F15] text-[#2B1F15] hover:bg-[#2B1F15] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
-          >
+          <div className="space-y-3 pt-6 border-t border-amber-500/20">
             {authed ? (
               <>
-                <ShieldCheck className="w-4 h-4 text-[#C49A6C]" />
-                <span className="max-w-[120px] truncate">{userEmail || 'Account'}</span>
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 font-semibold flex items-center justify-between">
+                  <span>Signed in account</span>
+                  <span className="font-bold text-white truncate max-w-[140px]">{fullName || userEmail}</span>
+                </div>
+
+                <button
+                  onClick={handleSignOut}
+                  className="w-full py-3.5 rounded-xl bg-red-500/10 text-red-300 font-bold text-sm border border-red-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
               </>
             ) : (
               <>
-                <LogIn className="w-4 h-4 text-[#C49A6C]" />
-                <span>Sign In</span>
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full py-3 rounded-xl border border-amber-500/30 text-white font-bold text-sm text-center block"
+                >
+                  Login
+                </Link>
+
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full btn-gold py-3 text-sm justify-center font-bold"
+                >
+                  Get Started Free
+                </Link>
               </>
             )}
-          </button>
-
-          <a
-            href="#contact"
-            className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0D0703] transition-all shadow-md active:scale-95 cursor-pointer"
-            style={{
-              background: 'linear-gradient(135deg, #C49A6C 0%, #E8D7C5 50%, #C49A6C 100%)',
-              boxShadow: '0 4px 14px rgba(196, 154, 108, 0.35)',
-            }}
-          >
-            Contact Us
-          </a>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 }
