@@ -65,12 +65,17 @@ function HeroCanvasAnimation() {
           if (img && img.complete && img.naturalWidth > 0) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Calculate cover aspect fill
-            const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-            const x = (canvas.width / 2) - (img.width / 2) * scale;
-            const y = (canvas.height / 2) - (img.height / 2) * scale;
+            // Crop 15% off right & bottom edges to completely eliminate AI frame watermark
+            const sx = img.width * 0.05;
+            const sy = img.height * 0.05;
+            const sw = img.width * 0.80;
+            const sh = img.height * 0.80;
+
+            const scale = Math.max(canvas.width / sw, canvas.height / sh);
+            const x = (canvas.width / 2) - (sw / 2) * scale;
+            const y = (canvas.height / 2) - (sh / 2) * scale;
             
-            ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+            ctx.drawImage(img, sx, sy, sw, sh, x, y, sw * scale, sh * scale);
           }
         }
       }

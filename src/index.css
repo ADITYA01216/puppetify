@@ -257,3 +257,13 @@ h1, h2, h3, h4 { font-family: var(--font-display); }
     display: none; /* Disable expensive continuous shimmer keyframe animation on mobile GPUs */
   }
 }
+
+/* ─── Hide Tailwind CDN Watermark ─── */
+#__tw-resolve,
+[data-tailwind],
+body > div[style*="position: fixed"][style*="z-index"]:not(#root):not(.fixed) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, ShieldCheck, LayoutDashboard, LogOut, Menu, X, User } from 'lucide-react';
+import { ShieldCheck, LogOut, Menu, X, Send } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { authed, fullName, signOut } = useAuth();
+  const { authed, fullName, userEmail, signOut } = useAuth();
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,7 +27,6 @@ export default function Navbar() {
     { name: 'Workflows', href: '/#workflows' },
     { name: 'Why Puppetify', href: '/#problem' },
     { name: 'FAQ', href: '/#faq' },
-    { name: 'Contact', href: '/#contact' },
   ];
 
   return (
@@ -82,7 +81,7 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Right Action Buttons */}
+        {/* Right Action Button (Direct Contact CTA / Sign Out) */}
         <div className="hidden sm:flex items-center gap-3">
           {authed ? (
             <>
@@ -101,26 +100,17 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm border border-amber-500/30 text-white hover:border-[#F5C842] hover:text-[#F5C842] transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <LogIn className="w-4 h-4 text-[#F5C842]" />
-                <span>Login</span>
-              </Link>
-
-              <Link
-                to="/signup"
-                className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0D0703] transition-all shadow-md active:scale-95 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #F5C842 0%, #E8A830 50%, #C9860A 100%)',
-                  boxShadow: '0 4px 14px rgba(245, 200, 66, 0.35)',
-                }}
-              >
-                Get Started
-              </Link>
-            </>
+            <a
+              href="/#contact"
+              className="px-5 py-2.5 rounded-xl font-extrabold text-xs sm:text-sm text-[#0D0703] transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #F5C842 0%, #E8A830 50%, #C9860A 100%)',
+                boxShadow: '0 4px 14px rgba(245, 200, 66, 0.35)',
+              }}
+            >
+              <span>Send Message</span>
+              <Send className="w-3.5 h-3.5 text-[#0D0703]" />
+            </a>
           )}
         </div>
 
@@ -171,23 +161,14 @@ export default function Navbar() {
                 </button>
               </>
             ) : (
-              <>
-                <Link
-                  to="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full py-3 rounded-xl border border-amber-500/30 text-white font-bold text-sm text-center block"
-                >
-                  Login
-                </Link>
-
-                <Link
-                  to="/signup"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full btn-gold py-3 text-sm justify-center font-bold"
-                >
-                  Get Started Free
-                </Link>
-              </>
+              <a
+                href="/#contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full btn-gold py-3 text-sm justify-center font-bold flex items-center gap-2"
+              >
+                <span>Send Message</span>
+                <Send className="w-4 h-4 text-[#0D0703]" />
+              </a>
             )}
           </div>
         </div>
