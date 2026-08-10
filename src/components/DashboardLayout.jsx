@@ -98,7 +98,7 @@ export default function DashboardLayout() {
       </aside>
 
       {/* ── MOBILE HEADER BAR ── */}
-      <header className="md:hidden flex items-center justify-between p-4 border-b border-amber-500/20 sticky top-0 z-40 bg-[#120A04]/95 backdrop-blur-md">
+      <header className="md:hidden flex items-center justify-between p-4 border-b border-amber-500/20 sticky top-0 z-40 bg-[#120A04]">
         <Link to="/" className="flex items-center gap-2">
           <img 
             src="/assets/puppet_logo.png" 
@@ -120,10 +120,34 @@ export default function DashboardLayout() {
         </div>
       </header>
 
-      {/* ── MOBILE DRAWER MENU ── */}
+      {/* ── MOBILE FULLSCREEN OPAQUE OVERLAY DRAWER ── */}
       {isMobileOpen && (
-        <div className="md:hidden fixed inset-0 top-16 z-50 bg-[#0D0703]/95 backdrop-blur-xl p-5 flex flex-col justify-between animate-fadeIn">
-          <nav className="space-y-2">
+        <div 
+          className="md:hidden fixed inset-0 z-[200] p-6 flex flex-col justify-between animate-fadeIn overflow-y-auto"
+          style={{
+            backgroundColor: '#0D0703',
+            opacity: 1,
+            minHeight: '100vh',
+          }}
+        >
+          {/* Mobile Overlay Header */}
+          <div className="flex items-center justify-between border-b border-amber-500/20 pb-4 mb-4">
+            <Link to="/" onClick={() => setIsMobileOpen(false)}>
+              <img 
+                src="/assets/puppet_logo.png" 
+                alt="Puppetify Logo" 
+                className="h-8 w-auto object-contain"
+              />
+            </Link>
+            <button
+              onClick={() => setIsMobileOpen(false)}
+              className="p-2 rounded-xl text-amber-300 border border-amber-500/30 bg-amber-500/10 cursor-pointer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          <nav className="space-y-2 flex-1 py-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -146,7 +170,7 @@ export default function DashboardLayout() {
             })}
           </nav>
 
-          <div className="pt-4 border-t border-amber-500/20">
+          <div className="pt-4 border-t border-amber-500/20 mt-auto">
             <button
               onClick={() => {
                 setIsMobileOpen(false);

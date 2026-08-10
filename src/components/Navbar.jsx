@@ -37,7 +37,7 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        background: isScrolled ? 'rgba(13, 7, 3, 0.94)' : 'rgba(13, 7, 3, 0.85)',
+        background: isScrolled ? 'rgba(13, 7, 3, 0.96)' : 'rgba(13, 7, 3, 0.90)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid rgba(245, 200, 66, 0.18)',
@@ -124,30 +124,59 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Slide-Over Drawer */}
+      {/* ── MOBILE FULLSCREEN OPAQUE OVERLAY DRAWER ── */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[72px] z-50 bg-[#1A0F07]/98 backdrop-blur-2xl p-6 flex flex-col justify-between animate-fadeIn text-white">
-          <div className="space-y-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-amber-400 border-b border-amber-500/20 pb-2">
+        <div 
+          className="lg:hidden fixed inset-0 z-[200] flex flex-col justify-between p-6 animate-fadeIn text-white overflow-y-auto"
+          style={{
+            backgroundColor: '#0D0703',
+            opacity: 1,
+            minHeight: '100vh',
+          }}
+        >
+          {/* Mobile Overlay Header */}
+          <div className="flex items-center justify-between border-b border-amber-500/20 pb-4 mb-4">
+            <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>
+              <img 
+                src="/assets/puppet_logo.png" 
+                alt="Puppetify Logo" 
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
+            <button
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-2 rounded-xl text-[#F5C842] border border-amber-500/30 bg-amber-500/10 cursor-pointer"
+              aria-label="Close Navigation Menu"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-6 flex-1 py-4">
+            <div className="text-xs font-bold uppercase tracking-wider text-amber-400 font-mono">
               Navigation
             </div>
             
-            {navLinks.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="block text-lg font-bold text-slate-200 hover:text-[#F5C842] transition-colors"
-              >
-                {item.name}
-              </a>
-            ))}
+            <div className="space-y-4">
+              {navLinks.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block text-xl font-bold text-slate-100 hover:text-[#F5C842] transition-colors py-2 border-b border-white/5"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-3 pt-6 border-t border-amber-500/20">
+          {/* Bottom Action Footer */}
+          <div className="pt-6 border-t border-amber-500/20 mt-auto">
             {authed ? (
               <>
-                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 font-semibold flex items-center justify-between">
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 font-semibold flex items-center justify-between mb-3">
                   <span>Signed in account</span>
                   <span className="font-bold text-white truncate max-w-[140px]">{fullName || userEmail}</span>
                 </div>
@@ -164,7 +193,7 @@ export default function Navbar() {
               <a
                 href="/#contact"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full btn-gold py-3 text-sm justify-center font-bold flex items-center gap-2"
+                className="w-full btn-gold py-4 text-base justify-center font-bold flex items-center gap-2 text-center"
               >
                 <span>Send Message</span>
                 <Send className="w-4 h-4 text-[#0D0703]" />
