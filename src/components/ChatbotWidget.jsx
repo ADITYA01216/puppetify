@@ -45,9 +45,9 @@ export default function ChatbotWidget() {
     setIsLoading(true);
 
     try {
-      console.log('Posting message to n8n webhook https://puppet.app.n8n.cloud/webhook/chatbot:', userText);
+      console.log('Posting message to n8n webhook https://puppetify12.app.n8n.cloud/webhook/chatbot:', userText);
       
-      const response = await fetch('https://puppet.app.n8n.cloud/webhook/chatbot', {
+      const response = await fetch('https://puppetify12.app.n8n.cloud/webhook/chatbot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

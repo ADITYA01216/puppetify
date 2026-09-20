@@ -31,10 +31,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Video assets (local only — not tracked in git)
-public/assets/*.mp4
+# Video assets
 public/assets/hero_video.mp4
 public/assets/hero_puppet_new.mp4
+!public/assets/demo-video.mp4
 
 # Landing page redesign (local only — not tracked in git)
 src/components/PuppetifyLanding.jsx

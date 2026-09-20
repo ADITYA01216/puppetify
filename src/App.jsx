@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import DemoVideoSection from './components/DemoVideoSection';
 import WorkflowVisualizer from './components/WorkflowVisualizer';
 import ProblemSection from './components/ProblemSection';
 import FaqSection from './components/FaqSection';
@@ -39,6 +40,8 @@ function LandingPage() {
 
       <main className="pt-20">
         <Hero onAction={scrollToWorkflows} />
+        <WoodenSectionDivider />
+        <DemoVideoSection />
         <WoodenSectionDivider />
         <WorkflowVisualizer onAction={scrollToWorkflows} />
         <WoodenSectionDivider />
