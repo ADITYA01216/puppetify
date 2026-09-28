@@ -2,14 +2,12 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import DemoVideoSection from './components/DemoVideoSection';
 import WorkflowVisualizer from './components/WorkflowVisualizer';
 import ProblemSection from './components/ProblemSection';
 import FaqSection from './components/FaqSection';
 import ContactSection from './components/ContactSection';
 import Footer from './components/Footer';
 import WoodenSectionDivider from './components/WoodenSectionDivider';
-import ChatbotWidget from './components/ChatbotWidget';
 
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -41,8 +39,6 @@ function LandingPage() {
       <main className="pt-20">
         <Hero onAction={scrollToWorkflows} />
         <WoodenSectionDivider />
-        <DemoVideoSection />
-        <WoodenSectionDivider />
         <WorkflowVisualizer onAction={scrollToWorkflows} />
         <WoodenSectionDivider />
         <ProblemSection onAction={scrollToWorkflows} />
@@ -53,7 +49,6 @@ function LandingPage() {
       </main>
 
       <Footer onAction={scrollToWorkflows} />
-      <ChatbotWidget />
     </div>
   );
 }
