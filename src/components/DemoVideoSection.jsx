@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Play } from 'lucide-react';
+import { Play, Sparkles, Shield, Zap } from 'lucide-react';
 
 export default function DemoVideoSection() {
   const containerRef = useRef(null);
@@ -45,6 +45,11 @@ export default function DemoVideoSection() {
 
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[rgba(247,206,85,0.08)] border border-[rgba(247,206,85,0.25)] text-xs font-bold text-[#F7CE55] uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-[#F7CE55]" />
+            Live Automation Demonstration
+          </div>
+
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
             See It <span className="gold-text-bright">In Action</span>
           </h2>
@@ -63,6 +68,29 @@ export default function DemoVideoSection() {
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
           }}
         >
+          {/* Top Puppet String Brass Grommet Accents */}
+          <div className="flex justify-between items-center px-4 pt-2 pb-3 border-b border-white/10 mb-3 text-xs text-[#E8D7C5]/70 font-mono">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-[#2b190c] border border-[#c8a96e] shadow-inner flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-[#c8a96e]" />
+              </div>
+              <span className="text-[11px] font-semibold text-[#F7CE55]">Puppet String Node #01</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-[#F7CE55] border border-amber-500/20 text-[10px] font-bold uppercase tracking-wider">
+                <Zap className="w-3 h-3" /> Live Demo Mode
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 hidden sm:flex">
+              <span className="text-[11px] font-semibold text-[#F7CE55]">Puppet String Node #02</span>
+              <div className="w-3 h-3 rounded-full bg-[#2b190c] border border-[#c8a96e] shadow-inner flex items-center justify-center">
+                <div className="w-1 h-1 rounded-full bg-[#c8a96e]" />
+              </div>
+            </div>
+          </div>
+
           {/* HTML5 Video Element Wrapper */}
           <div className="relative w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-2xl">
             {isInView ? (
@@ -96,11 +124,16 @@ export default function DemoVideoSection() {
             )}
           </div>
 
-          {/* Caption Footer */}
-          <div className="mt-4 px-2 py-3 sm:px-4 flex items-center justify-center sm:justify-start border-t border-white/10">
-            <p className="text-xs sm:text-sm text-[#F7EFE7] leading-relaxed max-w-3xl font-medium text-center sm:text-left">
+          {/* Caption & Metadata Footer */}
+          <div className="mt-4 px-2 py-3 sm:px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left border-t border-white/10">
+            <p className="text-xs sm:text-sm text-[#F7EFE7] leading-relaxed max-w-2xl font-medium">
               <span className="text-[#F7CE55] font-bold">What this demo shows:</span> Automate the entire hiring process — from candidate screening and scoring to interview scheduling, communication, and rescheduling, with minimal HR intervention.
             </p>
+
+            <div className="flex items-center gap-2 text-[11px] text-[#E8D7C5] font-mono shrink-0 bg-[#24150A] px-3 py-1.5 rounded-xl border border-amber-500/20">
+              <Shield className="w-3.5 h-3.5 text-[#F7CE55]" />
+              <span>Full HD Walkthrough</span>
+            </div>
           </div>
 
         </div>
